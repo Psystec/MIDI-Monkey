@@ -38,7 +38,7 @@ MIDI Monkey is a powerful, user-friendly application that allows you to play MID
 ### Requirements
 
 - Windows OS
-- .NET 8.0 Runtime (included in installer)
+- .NET 8.0 Runtime ([Download](https://dotnet.microsoft.com/en-us/download/dotnet/8.0))
 - Any game or application that accepts keyboard input
 
 ### Installation
