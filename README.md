@@ -148,6 +148,6 @@ For more information regarding the conditions of use where repositories omit a s
 ---
 
 <div align="center">
-  <p>Made with ❤️ by MIDI Monkey Team</p>
-  <p>Copyright © 2024</p>
+  <p>Made with ❤️ by Psystec</p>
+  <p>Copyright © 2025</p>
 </div>
