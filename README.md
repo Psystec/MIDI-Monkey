@@ -6,8 +6,8 @@
   <p>A lightweight, customizable MIDI playback tool for gamers and musicians</p>
 </div>
 
-![GitHub Release](https://img.shields.io/github/v/release/YourUsername/MIDI-Monkey?include_prereleases&style=for-the-badge)
-![License](https://img.shields.io/github/license/YourUsername/MIDI-Monkey?style=for-the-badge)
+![GitHub Release](https://img.shields.io/github/v/release/Psystec/MIDI-Monkey?include_prereleases&style=for-the-badge)
+![License](https://img.shields.io/github/license/Psystec/MIDI-Monkey?style=for-the-badge)
 ![.NET Version](https://img.shields.io/badge/.NET-8.0-5C2D91?style=for-the-badge&logo=.net)
 
 > **Note:** This application was previously known as "Once Human MIDI Maestro" but has been expanded to work with any game or application using custom MIDI keymaps.
