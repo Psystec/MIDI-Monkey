@@ -2,7 +2,7 @@
 
 <div align="center">
   <img src="https://github.com/Psystec/MIDI-Monkey/blob/master/Images/Monkey.png" alt="MIDI Monkey Logo" width="200"/>
-  <h3>Play Any MIDI File In Any Game or Application</h3>
+  <h3>Play Any MIDI File or device in Any Game or Application</h3>
   <p>A lightweight, customizable MIDI playback tool for gamers and musicians</p>
 </div>
 
