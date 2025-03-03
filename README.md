@@ -11,7 +11,6 @@
 [![Discord](https://img.shields.io/badge/Discord-Join%20Us-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/s3vqJRCGht)
 
 > **Note:** This application was previously known as "Once Human MIDI Maestro" but has been expanded to work with any game or application using custom MIDI keymaps.
-Discord: https://discord.gg/s3vqJRCGht
 > 
 ## 🎹 Overview
 
