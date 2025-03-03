@@ -8,9 +8,11 @@
 
 ![GitHub Release](https://img.shields.io/github/v/release/Psystec/MIDI-Monkey?include_prereleases&style=for-the-badge)
 ![.NET Version](https://img.shields.io/badge/.NET-8.0-5C2D91?style=for-the-badge&logo=.net)
+[![Discord](https://img.shields.io/discord/1270300040375697429?color=5865F2&label=Discord&logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/s3vqJRCGht)
 
 > **Note:** This application was previously known as "Once Human MIDI Maestro" but has been expanded to work with any game or application using custom MIDI keymaps.
-
+Discord: https://discord.gg/s3vqJRCGht
+> 
 ## 🎹 Overview
 
 MIDI Monkey is a powerful, user-friendly application that allows you to play MIDI files or a MIDI instrument in any game or application by translating MIDI notes into keyboard keypresses. Whether you want to play piano in your favorite MMORPG, create music in a sandbox game, or automate key sequences in any application, MIDI Monkey makes it simple and intuitive.
