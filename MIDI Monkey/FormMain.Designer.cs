@@ -448,6 +448,7 @@
             checkBoxAlwaysOnTop.TabIndex = 0;
             checkBoxAlwaysOnTop.Text = "Always On Top";
             checkBoxAlwaysOnTop.UseVisualStyleBackColor = true;
+            checkBoxAlwaysOnTop.CheckedChanged += checkBoxAlwaysOnTop_CheckedChanged;
             // 
             // checkBoxRepeatSong
             // 
@@ -459,6 +460,7 @@
             checkBoxRepeatSong.TabIndex = 0;
             checkBoxRepeatSong.Text = "Repeat Song";
             checkBoxRepeatSong.UseVisualStyleBackColor = true;
+            checkBoxRepeatSong.CheckedChanged += checkBoxRepeatSong_CheckedChanged;
             // 
             // pictureBoxPayPal
             // 

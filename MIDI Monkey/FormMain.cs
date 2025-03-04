@@ -801,6 +801,5 @@ namespace MIDI_Monkey
 
             base.OnFormClosing(e);
         }
-
     }
 }
