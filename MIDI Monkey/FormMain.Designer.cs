@@ -46,6 +46,7 @@
             listBoxMIDIFiles = new ListBox();
             splitContainerMain = new SplitContainer();
             splitContainerProfilesAndFiles = new SplitContainer();
+            buttonEditKeyMaps = new Button();
             groupBoxDebugLog = new GroupBox();
             richTextBoxLog = new RichTextBox();
             groupBoxSettings = new GroupBox();
@@ -94,6 +95,7 @@
             panelTop.Name = "panelTop";
             panelTop.Size = new Size(830, 35);
             panelTop.TabIndex = 0;
+            panelTop.Paint += panelTop_Paint;
             // 
             // pictureBoxLogo
             // 
@@ -140,7 +142,7 @@
             groupBoxMIDIkeyMapProfiles.ForeColor = Color.LightGray;
             groupBoxMIDIkeyMapProfiles.Location = new Point(3, 3);
             groupBoxMIDIkeyMapProfiles.Name = "groupBoxMIDIkeyMapProfiles";
-            groupBoxMIDIkeyMapProfiles.Size = new Size(151, 341);
+            groupBoxMIDIkeyMapProfiles.Size = new Size(151, 309);
             groupBoxMIDIkeyMapProfiles.TabIndex = 1;
             groupBoxMIDIkeyMapProfiles.TabStop = false;
             groupBoxMIDIkeyMapProfiles.Text = "MIDI KeyMap Profiles";
@@ -155,7 +157,7 @@
             listBoxMIDIKeyMaps.ItemHeight = 15;
             listBoxMIDIKeyMaps.Location = new Point(3, 19);
             listBoxMIDIKeyMaps.Name = "listBoxMIDIKeyMaps";
-            listBoxMIDIKeyMaps.Size = new Size(145, 319);
+            listBoxMIDIKeyMaps.Size = new Size(145, 287);
             listBoxMIDIKeyMaps.TabIndex = 6;
             listBoxMIDIKeyMaps.SelectedIndexChanged += listBoxMIDIKeyMaps_SelectedIndexChanged;
             // 
@@ -313,6 +315,7 @@
             // 
             // splitContainerProfilesAndFiles.Panel1
             // 
+            splitContainerProfilesAndFiles.Panel1.Controls.Add(buttonEditKeyMaps);
             splitContainerProfilesAndFiles.Panel1.Controls.Add(groupBoxMIDIkeyMapProfiles);
             splitContainerProfilesAndFiles.Panel1MinSize = 142;
             // 
@@ -323,6 +326,20 @@
             splitContainerProfilesAndFiles.Size = new Size(409, 347);
             splitContainerProfilesAndFiles.SplitterDistance = 160;
             splitContainerProfilesAndFiles.TabIndex = 4;
+            // 
+            // buttonEditKeyMaps
+            // 
+            buttonEditKeyMaps.BackColor = Color.DimGray;
+            buttonEditKeyMaps.FlatAppearance.MouseDownBackColor = Color.Gray;
+            buttonEditKeyMaps.FlatAppearance.MouseOverBackColor = Color.Silver;
+            buttonEditKeyMaps.FlatStyle = FlatStyle.System;
+            buttonEditKeyMaps.Location = new Point(3, 318);
+            buttonEditKeyMaps.Name = "buttonEditKeyMaps";
+            buttonEditKeyMaps.Size = new Size(151, 23);
+            buttonEditKeyMaps.TabIndex = 3;
+            buttonEditKeyMaps.Text = "MIDI KeyMap Editor";
+            buttonEditKeyMaps.UseVisualStyleBackColor = false;
+            buttonEditKeyMaps.Click += buttonEditKeyMaps_Click;
             // 
             // groupBoxDebugLog
             // 
@@ -434,7 +451,7 @@
             labelTempoLabel.Font = new Font("Segoe UI", 9F);
             labelTempoLabel.Location = new Point(153, 34);
             labelTempoLabel.Name = "labelTempoLabel";
-            labelTempoLabel.Size = new Size(47, 15);
+            labelTempoLabel.Size = new Size(46, 15);
             labelTempoLabel.TabIndex = 4;
             labelTempoLabel.Text = "Tempo:";
             // 
@@ -444,7 +461,7 @@
             checkBoxAlwaysOnTop.Font = new Font("Segoe UI", 9F);
             checkBoxAlwaysOnTop.Location = new Point(6, 47);
             checkBoxAlwaysOnTop.Name = "checkBoxAlwaysOnTop";
-            checkBoxAlwaysOnTop.Size = new Size(105, 19);
+            checkBoxAlwaysOnTop.Size = new Size(104, 19);
             checkBoxAlwaysOnTop.TabIndex = 0;
             checkBoxAlwaysOnTop.Text = "Always On Top";
             checkBoxAlwaysOnTop.UseVisualStyleBackColor = true;
@@ -593,5 +610,6 @@
         private PictureBox pictureBoxLogo;
         private GroupBox groupBoxDebugLog;
         private RichTextBox richTextBoxLog;
+        private Button buttonEditKeyMaps;
     }
 }

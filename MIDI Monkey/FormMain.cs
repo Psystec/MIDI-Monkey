@@ -22,7 +22,7 @@ namespace MIDI_Monkey
         public FormMain()
         {
             InitializeComponent();
-            labelAppNameLabel.Text = "MIDI Monkey v5.1";
+            labelAppNameLabel.Text = "MIDI Monkey v6.0";
             Logging.SetRichTextBox(richTextBoxLog);
             draggablePanelHelper = new DraggablePanelHelper(this, panelTop);
             resizableFormHelper = new ResizableFormHelper(this, panelResizeHandle);
@@ -800,6 +800,44 @@ namespace MIDI_Monkey
             cancellationTokenSource = null;
 
             base.OnFormClosing(e);
+        }
+
+        private void buttonEditKeyMaps_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string selectedKeyMap = string.Empty;
+
+                // If a keymap is already selected in the list, use that one
+                if (listBoxMIDIKeyMaps.SelectedItem != null)
+                {
+                    selectedKeyMap = listBoxMIDIKeyMaps.SelectedItem.ToString();
+                }
+
+                // Create and show the editor form
+                using (var editorForm = string.IsNullOrEmpty(selectedKeyMap)
+                    ? new FormMidiKeyMapEditor()
+                    : new FormMidiKeyMapEditor(selectedKeyMap))
+                {
+                    this.TopMost = false;
+                    checkBoxAlwaysOnTop.Checked = false;
+
+                    editorForm.ShowDialog();
+
+                    // Reload the keymap list after editing
+                    _ = LoadMidiKeyMapsAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.DebugLog($"Error opening KeyMap Editor: {ex.Message}");
+                Common.ShowErrorMessage($"Error opening KeyMap Editor: {ex.Message}");
+            }
+        }
+
+        private void panelTop_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }
