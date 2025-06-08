@@ -21,8 +21,9 @@ namespace MIDI_Monkey
 
         public FormMain()
         {
+            this.AutoScaleMode = AutoScaleMode.None;
             InitializeComponent();
-            labelAppNameLabel.Text = "MIDI Monkey v6.0";
+            labelAppNameLabel.Text = "MIDI Monkey v6.2";
             Logging.SetRichTextBox(richTextBoxLog);
             draggablePanelHelper = new DraggablePanelHelper(this, panelTop);
             resizableFormHelper = new ResizableFormHelper(this, panelResizeHandle);

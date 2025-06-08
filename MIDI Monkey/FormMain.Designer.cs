@@ -142,7 +142,7 @@
             groupBoxMIDIkeyMapProfiles.ForeColor = Color.LightGray;
             groupBoxMIDIkeyMapProfiles.Location = new Point(3, 3);
             groupBoxMIDIkeyMapProfiles.Name = "groupBoxMIDIkeyMapProfiles";
-            groupBoxMIDIkeyMapProfiles.Size = new Size(151, 309);
+            groupBoxMIDIkeyMapProfiles.Size = new Size(149, 309);
             groupBoxMIDIkeyMapProfiles.TabIndex = 1;
             groupBoxMIDIkeyMapProfiles.TabStop = false;
             groupBoxMIDIkeyMapProfiles.Text = "MIDI KeyMap Profiles";
@@ -157,7 +157,7 @@
             listBoxMIDIKeyMaps.ItemHeight = 15;
             listBoxMIDIKeyMaps.Location = new Point(3, 19);
             listBoxMIDIKeyMaps.Name = "listBoxMIDIKeyMaps";
-            listBoxMIDIKeyMaps.Size = new Size(145, 287);
+            listBoxMIDIKeyMaps.Size = new Size(143, 287);
             listBoxMIDIKeyMaps.TabIndex = 6;
             listBoxMIDIKeyMaps.SelectedIndexChanged += listBoxMIDIKeyMaps_SelectedIndexChanged;
             // 
@@ -208,9 +208,9 @@
             buttonUseMidiDevice.FlatAppearance.MouseDownBackColor = Color.Gray;
             buttonUseMidiDevice.FlatAppearance.MouseOverBackColor = Color.Silver;
             buttonUseMidiDevice.FlatStyle = FlatStyle.System;
-            buttonUseMidiDevice.Location = new Point(266, 62);
+            buttonUseMidiDevice.Location = new Point(265, 62);
             buttonUseMidiDevice.Name = "buttonUseMidiDevice";
-            buttonUseMidiDevice.Size = new Size(114, 23);
+            buttonUseMidiDevice.Size = new Size(115, 24);
             buttonUseMidiDevice.TabIndex = 0;
             buttonUseMidiDevice.Text = "Use MIDI Device";
             buttonUseMidiDevice.UseVisualStyleBackColor = false;
@@ -223,9 +223,9 @@
             buttonStopSong.FlatAppearance.MouseDownBackColor = Color.Gray;
             buttonStopSong.FlatAppearance.MouseOverBackColor = Color.Silver;
             buttonStopSong.FlatStyle = FlatStyle.System;
-            buttonStopSong.Location = new Point(286, 22);
+            buttonStopSong.Location = new Point(277, 22);
             buttonStopSong.Name = "buttonStopSong";
-            buttonStopSong.Size = new Size(93, 23);
+            buttonStopSong.Size = new Size(102, 24);
             buttonStopSong.TabIndex = 0;
             buttonStopSong.Text = "Stop Song (F6)";
             buttonStopSong.UseVisualStyleBackColor = false;
@@ -238,9 +238,9 @@
             buttonPlaySong.FlatAppearance.MouseDownBackColor = Color.Gray;
             buttonPlaySong.FlatAppearance.MouseOverBackColor = Color.Silver;
             buttonPlaySong.FlatStyle = FlatStyle.System;
-            buttonPlaySong.Location = new Point(187, 22);
+            buttonPlaySong.Location = new Point(173, 22);
             buttonPlaySong.Name = "buttonPlaySong";
-            buttonPlaySong.Size = new Size(93, 23);
+            buttonPlaySong.Size = new Size(98, 24);
             buttonPlaySong.TabIndex = 0;
             buttonPlaySong.Text = "Play Song (F5)";
             buttonPlaySong.UseVisualStyleBackColor = false;
@@ -254,7 +254,7 @@
             buttonSelectMIDIFolder.FlatStyle = FlatStyle.System;
             buttonSelectMIDIFolder.Location = new Point(6, 22);
             buttonSelectMIDIFolder.Name = "buttonSelectMIDIFolder";
-            buttonSelectMIDIFolder.Size = new Size(139, 23);
+            buttonSelectMIDIFolder.Size = new Size(139, 24);
             buttonSelectMIDIFolder.TabIndex = 0;
             buttonSelectMIDIFolder.Text = "Select MIDI Folder";
             buttonSelectMIDIFolder.UseVisualStyleBackColor = false;
@@ -269,7 +269,7 @@
             groupBoxSelectMIDIFolder.ForeColor = Color.LightGray;
             groupBoxSelectMIDIFolder.Location = new Point(3, 3);
             groupBoxSelectMIDIFolder.Name = "groupBoxSelectMIDIFolder";
-            groupBoxSelectMIDIFolder.Size = new Size(238, 341);
+            groupBoxSelectMIDIFolder.Size = new Size(237, 341);
             groupBoxSelectMIDIFolder.TabIndex = 3;
             groupBoxSelectMIDIFolder.TabStop = false;
             groupBoxSelectMIDIFolder.Text = "MIDI Files";
@@ -284,7 +284,7 @@
             listBoxMIDIFiles.ItemHeight = 15;
             listBoxMIDIFiles.Location = new Point(3, 19);
             listBoxMIDIFiles.Name = "listBoxMIDIFiles";
-            listBoxMIDIFiles.Size = new Size(232, 319);
+            listBoxMIDIFiles.Size = new Size(231, 319);
             listBoxMIDIFiles.TabIndex = 0;
             listBoxMIDIFiles.SelectedIndexChanged += listBoxMIDIFiles_SelectedIndexChanged;
             // 
@@ -304,7 +304,7 @@
             splitContainerMain.Panel2.Controls.Add(groupBoxSettings);
             splitContainerMain.Panel2.Controls.Add(groupBoxMIDIControls);
             splitContainerMain.Size = new Size(806, 347);
-            splitContainerMain.SplitterDistance = 409;
+            splitContainerMain.SplitterDistance = 408;
             splitContainerMain.TabIndex = 4;
             // 
             // splitContainerProfilesAndFiles
@@ -323,19 +323,20 @@
             // 
             splitContainerProfilesAndFiles.Panel2.Controls.Add(groupBoxSelectMIDIFolder);
             splitContainerProfilesAndFiles.Panel2MinSize = 78;
-            splitContainerProfilesAndFiles.Size = new Size(409, 347);
-            splitContainerProfilesAndFiles.SplitterDistance = 160;
+            splitContainerProfilesAndFiles.Size = new Size(408, 347);
+            splitContainerProfilesAndFiles.SplitterDistance = 159;
             splitContainerProfilesAndFiles.TabIndex = 4;
             // 
             // buttonEditKeyMaps
             // 
+            buttonEditKeyMaps.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             buttonEditKeyMaps.BackColor = Color.DimGray;
             buttonEditKeyMaps.FlatAppearance.MouseDownBackColor = Color.Gray;
             buttonEditKeyMaps.FlatAppearance.MouseOverBackColor = Color.Silver;
             buttonEditKeyMaps.FlatStyle = FlatStyle.System;
             buttonEditKeyMaps.Location = new Point(3, 318);
             buttonEditKeyMaps.Name = "buttonEditKeyMaps";
-            buttonEditKeyMaps.Size = new Size(151, 23);
+            buttonEditKeyMaps.Size = new Size(149, 24);
             buttonEditKeyMaps.TabIndex = 3;
             buttonEditKeyMaps.Text = "MIDI KeyMap Editor";
             buttonEditKeyMaps.UseVisualStyleBackColor = false;
@@ -404,7 +405,7 @@
             labelModifierDelayLabel.Anchor = AnchorStyles.Right;
             labelModifierDelayLabel.AutoSize = true;
             labelModifierDelayLabel.Font = new Font("Segoe UI", 9F);
-            labelModifierDelayLabel.Location = new Point(113, 84);
+            labelModifierDelayLabel.Location = new Point(112, 84);
             labelModifierDelayLabel.Name = "labelModifierDelayLabel";
             labelModifierDelayLabel.Size = new Size(87, 15);
             labelModifierDelayLabel.TabIndex = 12;
@@ -413,7 +414,7 @@
             // trackBarModifierDelay
             // 
             trackBarModifierDelay.Anchor = AnchorStyles.Right;
-            trackBarModifierDelay.Location = new Point(206, 72);
+            trackBarModifierDelay.Location = new Point(205, 72);
             trackBarModifierDelay.Maximum = 100;
             trackBarModifierDelay.Name = "trackBarModifierDelay";
             trackBarModifierDelay.Size = new Size(131, 45);
@@ -435,7 +436,7 @@
             // trackBarTempo
             // 
             trackBarTempo.Anchor = AnchorStyles.Right;
-            trackBarTempo.Location = new Point(206, 21);
+            trackBarTempo.Location = new Point(205, 21);
             trackBarTempo.Maximum = 20;
             trackBarTempo.Minimum = -10;
             trackBarTempo.Name = "trackBarTempo";
