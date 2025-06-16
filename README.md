@@ -16,6 +16,8 @@
 
 MIDI Monkey is a powerful, user-friendly application that allows you to play MIDI files or a MIDI instrument in any game or application by translating MIDI notes into keyboard keypresses. Whether you want to play piano in your favorite MMORPG, create music in a sandbox game, or automate key sequences in any application, MIDI Monkey makes it simple and intuitive.
 
+See it in action here: https://www.youtube.com/watch?v=1hGpBP8zH2U
+
 ## ✨ Key Features
 
 - **Universal Compatibility**: Works with any game or application through customizable key mappings
