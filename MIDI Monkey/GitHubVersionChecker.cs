@@ -13,13 +13,13 @@ namespace MIDI_Monkey
         {
             try
             {
-                Common.ShowErrorMessage($"Checking Version...", false);
+                Logging.DebugLog("$Checking Version...");
                 var version = await GetLatestReleaseVersionAsync();
-                Common.ShowErrorMessage($"Latest version: {version}", false);
+                Logging.DebugLog($"Latest version: {version}");
 
                 if (version != appVersion)
                 {
-                    Common.ShowErrorMessage($"A new version of MIDI Monkey is availabe!\nPlease update.\nLink: https://github.com/Psystec/MIDI-Monkey/releases/latest", false);
+                    Logging.DebugLog($"A new version of MIDI Monkey is availabe!\nPlease update.\nLink: https://github.com/Psystec/MIDI-Monkey/releases/latest");
                     return true;
                 }
 
