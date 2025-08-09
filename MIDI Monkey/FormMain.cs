@@ -7,6 +7,7 @@ namespace MIDI_Monkey
 {
     public partial class FormMain : Form
     {
+        private const string _appVersion = "v6.3";
         private DraggablePanelHelper draggablePanelHelper;
         private ResizableFormHelper resizableFormHelper;
 
@@ -23,7 +24,7 @@ namespace MIDI_Monkey
         {
             this.AutoScaleMode = AutoScaleMode.None;
             InitializeComponent();
-            labelAppNameLabel.Text = "MIDI Monkey v6.2";
+            labelAppNameLabel.Text = $"MIDI Monkey {_appVersion}";
             Logging.SetRichTextBox(richTextBoxLog);
             draggablePanelHelper = new DraggablePanelHelper(this, panelTop);
             resizableFormHelper = new ResizableFormHelper(this, panelResizeHandle);
@@ -41,6 +42,13 @@ namespace MIDI_Monkey
         private async void FormMain_Load(object sender, EventArgs e)
         {
             Logging.DebugLog($"Starting MIDI Monkey.");
+
+            GitHubVersionChecker ch = new GitHubVersionChecker();
+            bool updateAvaialbe = await ch.Check(_appVersion);
+            if (updateAvaialbe)
+            {
+                labelAppNameLabel.Text = $"MIDI Monkey {_appVersion} (UPDATE AVAILABLE)";
+            }
 
             LoadSettings();
 
@@ -181,7 +189,7 @@ namespace MIDI_Monkey
                 comboBoxMIDIDevices.SelectedIndex = 0;
                 comboBoxMIDIDevices.Enabled = false;
                 buttonUseMidiDevice.Enabled = false;
-                Logging.DebugLog("No MIDI input devices found (You can use a MIDI Keyboard with MIDI Maestro).");
+                Logging.DebugLog("No MIDI input devices found (You can use a MIDI Keyboard with MIDI Monkey).");
             }
         }
 

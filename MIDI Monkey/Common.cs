@@ -17,10 +17,8 @@ namespace MIDI_Monkey
         public static void ShowErrorMessage(string message, bool popup = true)
         {
             if (popup)
-                MessageBox.Show(message, "Once Human MIDI Maestro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(message, "MIDI Monkey", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             Logging.DebugLog($"{message}");
         }
-
-
     }
 }
