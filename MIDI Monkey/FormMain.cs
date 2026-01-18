@@ -314,15 +314,30 @@ namespace MIDI_Monkey
 
         private void buttonPlaySong_Click(object sender, EventArgs e)
         {
-            if (!TryGetGameWindowHandle())
-                return;
+            if (isPlaying)
+            {
+                Logging.DebugLog($"A is already playing, please stop the current one first.");
+            }
+            else
+            {
+                if (!TryGetGameWindowHandle())
+                    return;
 
-            StartPlayback();
+                StartPlayback();
+            }
         }
 
         private void buttonStopSong_Click(object sender, EventArgs e)
         {
-            StopPlayback();
+            if (isPlaying)
+            {
+                StopPlayback();
+            }
+            else
+            {
+                Logging.DebugLog($"There is no song currently playing.");
+            }
+                
         }
 
         private void OnGlobalKeyPressed(object sender, KeyPressedEventArgs e)
