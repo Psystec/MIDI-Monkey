@@ -43,13 +43,6 @@ namespace MIDI_Monkey
         {
             Logging.DebugLog($"Starting MIDI Monkey.");
 
-            GitHubVersionChecker ch = new GitHubVersionChecker();
-            bool updateAvaialbe = await ch.Check(_appVersion);
-            if (updateAvaialbe)
-            {
-                labelAppNameLabel.Text = $"MIDI Monkey {_appVersion} (UPDATE AVAILABLE)";
-            }
-
             LoadSettings();
 
             await LoadMidiKeyMapsAsync();
@@ -60,6 +53,13 @@ namespace MIDI_Monkey
             {
                 await LoadMidiFilesAsync(Settings.settings.LastMidiFolder);
                 SelectLastUsedItem(listBoxMIDIFiles, Path.GetFileName(Settings.settings.LastMidiFile));
+            }
+
+            GitHubVersionChecker ch = new GitHubVersionChecker();
+            bool updateAvaialbe = await ch.Check(_appVersion);
+            if (updateAvaialbe)
+            {
+                labelAppNameLabel.Text = $"MIDI Monkey {_appVersion} (UPDATE AVAILABLE)";
             }
         }
 
