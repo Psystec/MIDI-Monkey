@@ -7,7 +7,7 @@ namespace MIDI_Monkey
 {
     public partial class FormMain : Form
     {
-        private const string _appVersion = "v6.4";
+        private const string _appVersion = "v6.5";
         private DraggablePanelHelper draggablePanelHelper;
         private ResizableFormHelper resizableFormHelper;
 
@@ -422,7 +422,11 @@ namespace MIDI_Monkey
                         ki = new Win32Api.KEYBDINPUT
                         {
                             wVk = (ushort)key,
-                            dwFlags = keyDown ? 0 : Win32Api.KEYEVENTF_KEYUP
+                            wScan = (ushort)Win32Api.MapVirtualKey((uint)key, Win32Api.MAPVK_VK_TO_VSC),
+                            //dwFlags = keyDown ? 0 : Win32Api.KEYEVENTF_KEYUP,
+                            dwFlags = Win32Api.KEYEVENTF_SCANCODE | (keyDown ? 0 : Win32Api.KEYEVENTF_KEYUP),
+                            time = 0,
+                            dwExtraInfo = IntPtr.Zero,
                         }
                     }
                 }

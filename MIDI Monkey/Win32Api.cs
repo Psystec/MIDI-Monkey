@@ -15,6 +15,9 @@ namespace MIDI_Monkey
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetForegroundWindow(IntPtr hWnd);
 
+        [DllImport("user32.dll")]
+        public static extern ushort MapVirtualKey(uint uCode, uint uMapType);
+
         [StructLayout(LayoutKind.Sequential)]
         public struct INPUT
         {
@@ -62,5 +65,8 @@ namespace MIDI_Monkey
         public const int INPUT_KEYBOARD = 1;
         public const uint KEYEVENTF_EXTENDEDKEY = 0x0001;
         public const uint KEYEVENTF_KEYUP = 0x0002;
+        public const uint KEYEVENTF_SCANCODE = 0x0008;
+        public const uint MAPVK_VK_TO_VSC = 0;
+        public const uint MAPVK_VK_TO_VSC_EX = 4;
     }
 }
