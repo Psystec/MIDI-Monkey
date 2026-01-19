@@ -7,7 +7,7 @@ namespace MIDI_Monkey
 {
     public partial class FormMain : Form
     {
-        private const string _appVersion = "v6.5";
+        private const string _appVersion = "v6.6";
         private DraggablePanelHelper draggablePanelHelper;
         private ResizableFormHelper resizableFormHelper;
 
@@ -43,6 +43,13 @@ namespace MIDI_Monkey
         {
             Logging.DebugLog($"Starting MIDI Monkey.");
 
+            GitHubVersionChecker ch = new GitHubVersionChecker();
+            bool updateAvaialbe = await ch.Check(_appVersion);
+            if (updateAvaialbe)
+            {
+                labelAppNameLabel.Text = $"MIDI Monkey {_appVersion} (UPDATE AVAILABLE)";
+            }
+
             LoadSettings();
 
             await LoadMidiKeyMapsAsync();
@@ -55,12 +62,7 @@ namespace MIDI_Monkey
                 SelectLastUsedItem(listBoxMIDIFiles, Path.GetFileName(Settings.settings.LastMidiFile));
             }
 
-            GitHubVersionChecker ch = new GitHubVersionChecker();
-            bool updateAvaialbe = await ch.Check(_appVersion);
-            if (updateAvaialbe)
-            {
-                labelAppNameLabel.Text = $"MIDI Monkey {_appVersion} (UPDATE AVAILABLE)";
-            }
+
         }
 
         private void LoadSettings()

@@ -8,22 +8,34 @@ namespace MIDI_Monkey
     public class GitHubVersionChecker
     {
         private static readonly HttpClient httpClient = new HttpClient();
+        private static string? cachedVersion;
+        private static string? lastETag;
 
         public async Task<bool> Check(string appVersion)
         {
             try
             {
-                Logging.DebugLog("$Checking Version...");
+                Logging.DebugLog("Checking Version...");
                 var version = await GetLatestReleaseVersionAsync();
                 Logging.DebugLog($"Latest version: {version}");
 
-                if (version != appVersion)
+                int comparison = CompareVersions(appVersion, version);
+
+                if (comparison < 0)
                 {
-                    Logging.DebugLog($"A new version of MIDI Monkey is availabe!\nPlease update.\nLink: https://github.com/Psystec/MIDI-Monkey/releases/latest");
+                    Logging.DebugLog($"A new version of MIDI Monkey is available!\nPlease update.\nLink: https://github.com/Psystec/MIDI-Monkey/releases/latest");
                     return true;
                 }
-
-                return false;
+                else if (comparison > 0)
+                {
+                    Logging.DebugLog($"Running development version ({appVersion}). Latest stable release: {version}");
+                    return false;
+                }
+                else
+                {
+                    Logging.DebugLog($"MIDI Monkey is up to date!");
+                    return false;
+                }
             }
             catch (Exception ex)
             {
@@ -32,17 +44,49 @@ namespace MIDI_Monkey
             }
         }
 
+        private int CompareVersions(string current, string latest)
+        {
+            current = current.TrimStart('v', 'V');
+            latest = latest.TrimStart('v', 'V');
+
+            try
+            {
+                Version currentVersion = new Version(current);
+                Version latestVersion = new Version(latest);
+                return currentVersion.CompareTo(latestVersion);
+            }
+            catch
+            {
+                return string.Compare(current, latest, StringComparison.OrdinalIgnoreCase);
+            }
+        }
+
         public static async Task<string> GetLatestReleaseVersionAsync()
         {
-            string url = $"https://api.github.com/repos/Psystec/MIDI-Monkey/releases/latest";
+            string url = "https://api.github.com/repos/Psystec/MIDI-Monkey/releases/latest";
             httpClient.DefaultRequestHeaders.Clear();
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "GitHubVersionChecker/1.0");
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "MIDI-Monkey-Version-Checker/1.0");
+
+            if (!string.IsNullOrEmpty(lastETag))
+            {
+                httpClient.DefaultRequestHeaders.Add("If-None-Match", lastETag);
+            }
 
             HttpResponseMessage response = await httpClient.GetAsync(url);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotModified)
+            {
+                return cachedVersion ?? "No version found";
+            }
 
             if (!response.IsSuccessStatusCode)
             {
                 throw new HttpRequestException($"GitHub API request failed: {response.StatusCode} - {response.ReasonPhrase}");
+            }
+
+            if (response.Headers.ETag != null)
+            {
+                lastETag = response.Headers.ETag.Tag;
             }
 
             string jsonContent = await response.Content.ReadAsStringAsync();
@@ -51,7 +95,9 @@ namespace MIDI_Monkey
                 PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
             });
 
-            return release?.TagName ?? "No version found";
+            cachedVersion = release?.TagName ?? "No version found";
+
+            return cachedVersion;
         }
     }
 

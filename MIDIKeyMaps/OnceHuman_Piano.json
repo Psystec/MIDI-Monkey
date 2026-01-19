@@ -1,0 +1,49 @@
+# MIDI Monkey MidiKeyMap Config.
+# To create your MIDI Key Mapping, you need to assign each MIDI key to a corresponding keyboard key. Each mapping can include a modifier key (such as Shift or Control) followed by the alphanumeric keyboard key. If you do not want to use a modifier key, simply omit it and use only the alphanumeric key.
+# The configuration follows this structure:
+#   1. MIDI Key: The MIDI note you want to map. (0 to 127)
+#   2. Modifier Key (Optional): The modifier key, if any (e.g., Shift, Control).
+#   3. Alphanumeric Keyboard Key: The alphanumeric key on the keyboard that will correspond to the MIDI key.
+#   4. ApplicationName: The process name (without .exe) that this mapping is for.
+
+{
+  "ApplicationName": "ONCE_HUMAN",
+  "KeyMappings": {
+    "48": [ "LCONTROL", "VK_Q" ],
+    "49": [ "LCONTROL", "VK_2" ],
+    "50": [ "LCONTROL", "VK_W" ],
+    "51": [ "LCONTROL", "VK_3" ],
+    "52": [ "LCONTROL", "VK_E" ],
+    "53": [ "LCONTROL", "VK_R" ],
+    "54": [ "LCONTROL", "VK_5" ],
+    "55": [ "LCONTROL", "VK_T" ],
+    "56": [ "LCONTROL", "VK_6" ],
+    "57": [ "LCONTROL", "VK_Y" ],
+    "58": [ "LCONTROL", "VK_7" ],
+    "59": [ "LCONTROL", "VK_U" ],
+    "60": [ "", "VK_Q" ],
+    "61": [ "", "VK_2" ],
+    "62": [ "", "VK_W" ],
+    "63": [ "", "VK_3" ],
+    "64": [ "", "VK_E" ],
+    "65": [ "", "VK_R" ],
+    "66": [ "", "VK_5" ],
+    "67": [ "", "VK_T" ],
+    "68": [ "", "VK_6" ],
+    "69": [ "", "VK_Y" ],
+    "70": [ "", "VK_7" ],
+    "71": [ "", "VK_U" ],
+    "72": [ "LSHIFT", "VK_Q" ],
+    "73": [ "LSHIFT", "VK_2" ],
+    "74": [ "LSHIFT", "VK_W" ],
+    "75": [ "LSHIFT", "VK_3" ],
+    "76": [ "LSHIFT", "VK_E" ],
+    "77": [ "LSHIFT", "VK_R" ],
+    "78": [ "LSHIFT", "VK_5" ],
+    "79": [ "LSHIFT", "VK_T" ],
+    "80": [ "LSHIFT", "VK_6" ],
+    "81": [ "LSHIFT", "VK_Y" ],
+    "82": [ "LSHIFT", "VK_7" ],
+    "83": [ "LSHIFT", "VK_U" ]
+  }
+}
