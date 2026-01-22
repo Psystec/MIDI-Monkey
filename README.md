@@ -1,10 +1,10 @@
 # MIDI Monkey
 
-<div align="center">
+<p align="center">
   <img src="https://github.com/Psystec/MIDI-Monkey/blob/master/Images/Monkey.png" alt="MIDI Monkey Logo" width="200"/>
   <h3>Play Any MIDI File or Device in Any Game or Application</h3>
   <p>A lightweight, customizable MIDI playback tool for gamers and musicians</p>
-</div>
+</p>
 
 ![GitHub Release](https://img.shields.io/github/v/release/Psystec/MIDI-Monkey?include_prereleases&style=for-the-badge)
 ![.NET Version](https://img.shields.io/badge/.NET-8.0-5C2D91?style=for-the-badge&logo=.net)
@@ -31,9 +31,9 @@ See it in action here: https://www.youtube.com/watch?v=1hGpBP8zH2U
 
 ## 📷 Screenshots
 
-<div align="center">
+<p align="center">
   <img src="https://github.com/Psystec/MIDI-Monkey/blob/master/Images/MIDIMonkey_Example.png" alt="MIDI Monkey Main Interface" width="700"/>
-</div>
+</p>
 
 ## 🚀 Getting Started
 
@@ -151,7 +151,7 @@ For more information regarding the conditions of use where repositories omit a s
 
 ---
 
-<div align="center">
+<p align="center">
   <p>Made with ❤️ by Psystec</p>
-  <p>Copyright © 2025</p>
-</div>
+  <p>Copyright © 2026</p>
+</p>
