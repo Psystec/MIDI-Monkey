@@ -45,7 +45,7 @@ See it in action here: https://www.youtube.com/watch?v=1hGpBP8zH2U
 
 ### Installation
 
-1. Download the latest release from the [Releases page](https://github.com/YourUsername/MIDI-Monkey/releases)
+1. Download the latest release from the [Releases page](https://github.com/Psystec/MIDI-Monkey/releases)
 2. Launch MIDI Monkey.
 
 ## 📝 How to Use
