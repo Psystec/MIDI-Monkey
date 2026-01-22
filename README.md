@@ -110,12 +110,14 @@ See it in action here: https://www.youtube.com/watch?v=1hGpBP8zH2U
 MIDI Monkey works with any game or application that accepts keyboard input, including:
 
 - Once Human
+- Where Winds Meet
+- Heartopia
+- Minecraft
 - Final Fantasy XIV
 - Rust
 - Starfield
 - World of Warcraft
 - Black Desert Online
-- Minecraft
 - Any application that can be controlled with keyboard shortcuts
 
 ## 🔧 Troubleshooting
