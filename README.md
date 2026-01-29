@@ -99,13 +99,6 @@ See it in action here: https://www.youtube.com/watch?v=1hGpBP8zH2U
 "48": [ "LeftControl", "Q" ]
 ```
 
-### Advanced Settings
-
-- **Tempo**: Adjust playback speed (faster or slower)
-- **Modifier Delay**: Add a delay between pressing modifier keys and the main key
-- **Repeat Song**: Enable to loop the song continuously
-- **Always on Top**: Keep MIDI Monkey visible over your game
-
 ## 📋 Supported Games & Applications
 
 MIDI Monkey works with any game or application that accepts keyboard input, including:
@@ -120,20 +113,6 @@ MIDI Monkey works with any game or application that accepts keyboard input, incl
 - World of Warcraft
 - Black Desert Online
 - Any application that can be controlled with keyboard shortcuts
-
-## 🔧 Troubleshooting
-
-**Game not recognizing key presses?**
-- Make sure you've selected the correct KeyMap profile
-- Verify the process name in your KeyMap matches your game exactly
-- Try running MIDI Monkey as administrator
-
-**MIDI device not working?**
-- Ensure your MIDI device is properly connected and recognized by Windows
-- Check if any other application is using the MIDI device
-- Restart MIDI Monkey after connecting your device
-
-## 🤝 Contributing
 
 ## 💖 Support the Project
 
