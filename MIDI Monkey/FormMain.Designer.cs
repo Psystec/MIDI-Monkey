@@ -276,7 +276,7 @@ namespace MIDI_Monkey
             buttonStopSong.Name = "buttonStopSong";
             buttonStopSong.Size = new Size(102, 24);
             buttonStopSong.TabIndex = 0;
-            buttonStopSong.Text = "Stop Song";
+            buttonStopSong.Text = "Stop Song (F6)";
             buttonStopSong.UseVisualStyleBackColor = false;
             buttonStopSong.Click += buttonStopSong_Click;
             // 
@@ -291,7 +291,7 @@ namespace MIDI_Monkey
             buttonPlaySong.Name = "buttonPlaySong";
             buttonPlaySong.Size = new Size(98, 24);
             buttonPlaySong.TabIndex = 0;
-            buttonPlaySong.Text = "Play Song";
+            buttonPlaySong.Text = "Play Song (F5)";
             buttonPlaySong.UseVisualStyleBackColor = false;
             buttonPlaySong.Click += buttonPlaySong_Click;
             // 
