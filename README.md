@@ -1,7 +1,7 @@
 ﻿# MIDI Monkey
 
 <p align="center">
-  <img src="https://github.com/Psystec/MIDI-Monkey/blob/master/Images/Monkey.png" alt="MIDI Monkey Logo" width="200"/>
+  <img src="https://github.com/Psystec/MIDI-Monkey/blob/master/MIDI%20Monkey/UI/Monkey.png" alt="MIDI Monkey Logo" width="200"/>
   <h3>Play Any MIDI File or Device in Any Game or Application</h3>
   <p>A customizable MIDI playback tool for gamers and musicians</p>
 </p>
@@ -33,7 +33,7 @@ See it in action here: https://www.youtube.com/watch?v=1hGpBP8zH2U
 ## 📷 Screenshots
 
 <p align="center">
-  <img src="https://github.com/Psystec/MIDI-Monkey/blob/master/Images/MIDIMonkey_Example.png" alt="MIDI Monkey Main Interface" width="700"/>
+  <img src="https://github.com/Psystec/MIDI-Monkey/blob/master/MIDI%20Monkey/UI/MIDIMonkeyInterface.png" alt="MIDI Monkey Main Interface" width="700"/>
 </p>
 
 ## 🚀 Getting Started
