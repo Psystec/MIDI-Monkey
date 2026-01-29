@@ -1,0 +1,51 @@
+# MIDI Monkey MidiKeyMap Config v2.0.
+# To create your MIDI Key Mapping, you need to assign each MIDI key to a corresponding keyboard key.
+# Each mapping can include a modifier key (such as Shift or Control) followed by the alphanumeric keyboard key.
+# If you do not want to use a modifier key, simply omit it and use only the alphanumeric key.
+# The configuration follows this structure:
+#   1. MIDI Key: The MIDI note you want to map (0 to 127)
+#   2. Modifier Key (Optional): The modifier key, if any (e.g., LeftShift, RightShift)
+#   3. Alphanumeric Keyboard Key: The key on the keyboard (e.g., Q, W, Number1, Number0)
+#   4. ApplicationName: The process name (without .exe) that this mapping is for
+
+{
+  "ApplicationName": "ONCE_HUMAN",
+  "KeyMappings": {
+  "48": [ "", "Z" ],
+  "49": [ "", "X" ],
+  "50": [ "", "X" ],
+  "51": [ "", "C" ],
+  "52": [ "", "C" ],
+  "53": [ "", "V" ],
+  "54": [ "", "B" ],
+  "55": [ "", "B" ],
+  "56": [ "", "N" ],
+  "57": [ "", "N" ],
+  "58": [ "", "M" ],
+  "59": [ "", "M" ],
+  "60": [ "", "A" ],
+  "61": [ "", "S" ],
+  "62": [ "", "S" ],
+  "63": [ "", "D" ],
+  "64": [ "", "D" ],
+  "65": [ "", "F" ],
+  "66": [ "", "G" ],
+  "67": [ "", "G" ],
+  "68": [ "", "H" ],
+  "69": [ "", "H" ],
+  "70": [ "", "J" ],
+  "71": [ "", "J" ],
+  "72": [ "", "Q" ],
+  "73": [ "", "W" ],
+  "74": [ "", "W" ],
+  "75": [ "", "E" ],
+  "76": [ "", "E" ],
+  "77": [ "", "R" ],
+  "78": [ "", "T" ],
+  "79": [ "", "T" ],
+  "80": [ "", "Y" ],
+  "81": [ "", "Y" ],
+  "82": [ "", "U" ],
+  "83": [ "", "I" ]
+  }
+}

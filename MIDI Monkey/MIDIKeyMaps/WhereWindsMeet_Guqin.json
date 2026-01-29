@@ -1,0 +1,52 @@
+# MIDI Monkey MidiKeyMap Config v2.0.
+# To create your MIDI Key Mapping, you need to assign each MIDI key to a corresponding keyboard key.
+# Each mapping can include a modifier key (such as Shift or Control) followed by the alphanumeric keyboard key.
+# If you do not want to use a modifier key, simply omit it and use only the alphanumeric key.
+# The configuration follows this structure:
+#   1. MIDI Key: The MIDI note you want to map (0 to 127)
+#   2. Modifier Key (Optional): The modifier key, if any (e.g., LeftShift, RightShift)
+#   3. Alphanumeric Keyboard Key: The key on the keyboard (e.g., Q, W, Number1, Number0)
+#   4. ApplicationName: The process name (without .exe) that this mapping is for
+
+{
+  "ApplicationName": "wwm",
+  "KeyMappings": {
+    "35": ["LeftControl", "M"],
+    "36": ["Z"],
+    "37": ["LeftShift", "Z"],
+    "38": ["X"],
+    "39": ["LeftControl", "C"],
+    "40": ["C"],
+    "41": ["LeftShift", "V"],
+    "42": ["V"],
+    "43": ["LeftShift", "B"],
+    "44": ["B"],
+    "45": ["N"],
+    "46": ["LeftControl", "M"],
+    "47": ["M"],
+    "48": ["A"],
+    "49": ["LeftShift", "A"],
+    "50": ["S"],
+    "51": ["LeftControl", "D"],
+    "52": ["D"],
+    "53": ["LeftShift", "F"],
+    "54": ["F"],
+    "55": ["LeftShift", "G"],
+    "56": ["G"],
+    "57": ["H"],
+    "58": ["LeftControl", "J"],
+    "59": ["J"],
+    "60": ["Q"],
+    "61": ["LeftShift", "Q"],
+    "62": ["W"],
+    "63": ["LeftControl", "E"],
+    "64": ["E"],
+    "65": ["LeftShift", "R"],
+    "66": ["R"],
+    "67": ["LeftShift", "T"],
+    "68": ["T"],
+    "69": ["Y"],
+    "70": ["LeftControl", "U"],
+    "71": ["U"]
+  }
+}
