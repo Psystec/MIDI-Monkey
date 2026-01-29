@@ -121,7 +121,7 @@
   <data name="pictureBoxSignalApp.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAfQAAAH0CAYAAADL1t+KAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAL
-        DwAACw8BkvkDpQAAqn9JREFUeF7tnQV4HEfy9idwgWPIUb67f3JBM0pakGRJtiUtSGaKw3EYHCaHmZmZ
+        DgAACw4BQL7hQQAAqn9JREFUeF7tnQV4HEfy9idwgWPIUb67f3JBM0pakGRJtiUtSGaKw3EYHCaHmZmZ
         mRkccpzEjklaFjNZzCzV12/vruPYE0e2BTOzVc/zixzhzmxPv13V1VWKotDIk07KQRdVKQlJGYrZ5lFM
         Dq9isnkV66xMxZJWoiQkrlOsyesUiyOgRNv8Snzit0pcykbFbPcrselZitnpVyx2lxK1rFsxzSpQ4pzr
         FbND/B57QJm34G0lPj1D/O5vFYstU0k4rkCxOnxKVPRGxZTmFT+zUXzep5icXvG3MpUY8fcnproUq1P8
@@ -855,7 +855,7 @@
   <data name="pictureBoxDiscord.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAfQAAAH0CAYAAADL1t+KAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAL
-        DwAACw8BkvkDpQAATJRJREFUeF7t3QeYHPWV7/1d3032eu/ed+3dveuw6/Xeu+/e9z6P9/He67VNFCBA
+        DgAACw4BQL7hQQAATJRJREFUeF7t3QeYHPWV7/1d3032eu/ed+3dveuw6/Xeu+/e9z6P9/He67VNFCBA
         WRolJCSBJGREskEEk4MJJsgig8CATbRNMDbCJAMm2OCAMRgwwmQR1d2TRzMaaST93/Or6R6PRqcnVndX
         VX/P83wembI00/WvU+d0pX/90X5fakRyfcD8pfmo+YT5V/NZs4sZb6aa/cwic5hZbo4zp5uTin9ebC4p
         /lmyylxlvmtuNt8xNxr9vYtM/78LIL0uMyvNyeYUc2rxz8PNIUX7m3lmilFdUX1Rnfl/zSeN6s+HzZ8Y

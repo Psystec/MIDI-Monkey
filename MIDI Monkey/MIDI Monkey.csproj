@@ -8,7 +8,12 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>disable</ImplicitUsings>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Monkey.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Monkey.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="NAudio.Midi" Version="2.2.1" />
