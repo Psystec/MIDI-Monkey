@@ -2,5 +2,8 @@
   <Folder Name="/Solution Items/">
     <File Path="README.md" />
   </Folder>
+  <Folder Name="/Solution Items/Images/">
+    <File Path="../../Photoshop/MIDI Monkey/Monkey.png" />
+  </Folder>
   <Project Path="MIDI Monkey/MIDI Monkey.csproj" />
 </Solution>
