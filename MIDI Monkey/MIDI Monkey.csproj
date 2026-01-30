@@ -48,6 +48,9 @@
     <None Update="MIDIKeyMaps\OnceHuman_Piano.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="MIDIKeyMaps\Roblox_Piano.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="MIDIKeyMaps\WhereWindsMeet_Guqin.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
