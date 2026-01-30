@@ -1,0 +1,78 @@
+# MIDI Monkey MidiKeyMap Config v2.0.
+# To create your MIDI Key Mapping, you need to assign each MIDI key to a corresponding keyboard key.
+# Each mapping can include a modifier key (such as Shift or Control) followed by the alphanumeric keyboard key.
+# If you do not want to use a modifier key, simply omit it and use only the alphanumeric key.
+# The configuration follows this structure:
+#   1. MIDI Key: The MIDI note you want to map (0 to 127)
+#   2. Modifier Key (Optional): The modifier key, if any (e.g., LeftShift, RightShift)
+#   3. Alphanumeric Keyboard Key: The key on the keyboard (e.g., Q, W, Number1, Number0)
+#   4. ApplicationName: The process name (without .exe) that this mapping is for
+# CREATED BY Reinvord https://linktr.ee/reinvord
+
+{
+  "ApplicationName": "RobloxPlayerBeta",
+  "KeyMappings": {
+
+    "36": ["", "Number1"],
+    "38": ["", "Number2"],
+    "40": ["", "Number3"],
+    "41": ["", "Number4"],
+    "43": ["", "Number5"],
+    "45": ["", "Number6"],
+    "47": ["", "Number7"],
+    "48": ["", "Number8"],
+    "50": ["", "Number9"],
+    "52": ["", "Number0"],
+    "53": ["", "Q"],
+    "55": ["", "W"],
+    "57": ["", "E"],
+    "59": ["", "R"],
+    "60": ["", "T"],
+    "62": ["", "Y"],
+    "64": ["", "U"],
+    "65": ["", "I"],
+    "67": ["", "O"],
+    "69": ["", "P"],
+    "71": ["", "A"],
+    "72": ["", "S"],
+    "74": ["", "D"],
+    "76": ["", "F"],
+    "77": ["", "G"],
+    "79": ["", "H"],
+    "81": ["", "J"],
+    "83": ["", "K"],
+    "84": ["", "L"],
+    "86": ["", "Z"],
+    "88": ["", "X"],
+    "89": ["", "C"],
+    "91": ["", "V"],
+    "93": ["", "B"],
+    "95": ["", "N"],
+    "96": ["", "M"],
+    "37": ["LSHIFT", "Number1"],
+    "39": ["LSHIFT", "Number2"],
+    "42": ["LSHIFT", "Number4"],
+    "44": ["LSHIFT", "Number5"],
+    "46": ["LSHIFT", "Number6"],
+    "49": ["LSHIFT", "Number8"],
+    "51": ["LSHIFT", "Number9"],
+    "54": ["LSHIFT", "Q"],
+    "56": ["LSHIFT", "W"],
+    "58": ["LSHIFT", "E"],
+    "61": ["LSHIFT", "T"],
+    "63": ["LSHIFT", "Y"],
+    "66": ["LSHIFT", "I"],
+    "68": ["LSHIFT", "O"],
+    "70": ["LSHIFT", "P"],
+    "73": ["LSHIFT", "S"],
+    "75": ["LSHIFT", "D"],
+    "78": ["LSHIFT", "G"],
+    "80": ["LSHIFT", "H"],
+    "82": ["LSHIFT", "J"],
+    "85": ["LSHIFT", "L"],
+    "87": ["LSHIFT", "Z"],
+    "90": ["LSHIFT", "C"],
+    "92": ["LSHIFT", "V"],
+    "94": ["LSHIFT", "B"]
+  }
+}
