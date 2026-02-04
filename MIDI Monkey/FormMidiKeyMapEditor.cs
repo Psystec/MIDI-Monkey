@@ -65,9 +65,14 @@ namespace MIDI_Monkey
                 DataPropertyName = "Modifier",
                 Width = 120
             };
-            modifierColumn.Items.AddRange(new object[] {
-                "None", "Shift", "Control", "Alt", "LeftShift", "LeftControl", "LeftAlt", "RightShift", "RightControl", "RightAlt"
-            });
+            //modifierColumn.Items.AddRange(new object[] {
+            //    "None", "Shift", "Control", "Alt", "LeftShift", "LeftControl", "LeftAlt", "RightShift", "RightControl", "RightAlt"
+            //});
+            modifierColumn.Items.AddRange(Enum.GetValues(typeof(VirtualKey))
+                .Cast<VirtualKey>()
+                .Select(k => k.ToString())
+                .Prepend("None")
+                .ToArray());
 
             var keyColumn = new DataGridViewComboBoxColumn
             {
@@ -76,7 +81,6 @@ namespace MIDI_Monkey
                 DataPropertyName = "Key",
                 Width = 120
             };
-
             var keyValues = Enum.GetValues(typeof(VirtualKey))
                 .Cast<VirtualKey>()
                 .Where(k => k != VirtualKey.LeftShift && k != VirtualKey.RightShift &&
@@ -84,7 +88,6 @@ namespace MIDI_Monkey
                             k != VirtualKey.LeftControl && k != VirtualKey.RightControl)
                 .Select(k => k.ToString())
                 .ToArray();
-
             keyColumn.Items.AddRange(keyValues);
 
             dataGridViewKeyMappings.Columns.AddRange(new DataGridViewColumn[] {
@@ -197,27 +200,19 @@ namespace MIDI_Monkey
                     if (int.TryParse(entry.Key, out int midiKey) && midiKey >= 0 && midiKey < 128)
                     {
                         var keyCodes = new List<VirtualKey>();
-                        string modifier = "None";
-                        string mainKey = "";
-
+                        var parsedKeys = new List<VirtualKey>();
                         foreach (var keyName in entry.Value)
                         {
                             if (Enum.TryParse(keyName, out VirtualKey keyCode))
                             {
-                                keyCodes.Add(keyCode);
-
-                                if (keyCode == VirtualKey.LeftShift || keyCode == VirtualKey.RightShift ||
-                                    keyCode == VirtualKey.LeftControl || keyCode == VirtualKey.RightControl ||
-                                    keyCode == VirtualKey.LeftAlt || keyCode == VirtualKey.RightAlt)
-                                {
-                                    modifier = keyCode.ToString();
-                                }
-                                else
-                                {
-                                    mainKey = keyCode.ToString();
-                                }
+                                parsedKeys.Add(keyCode);
                             }
                         }
+
+                        string modifier = parsedKeys.Count > 1 ? parsedKeys[0].ToString() : "None";
+                        string mainKey = parsedKeys.Count > 0 ? parsedKeys[^1].ToString() : "";
+
+                        keyCodes.AddRange(parsedKeys);
 
                         var gridEntry = mappingEntries.FirstOrDefault(e => e.MidiNote == midiKey);
                         if (gridEntry != null)

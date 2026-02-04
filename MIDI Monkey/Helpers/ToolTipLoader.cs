@@ -9,8 +9,8 @@ namespace MIDI_Monkey.Helpers
         {
             [ControlNames.GroupBoxMIDIkeyMapProfiles] = "Manage and select different MIDI key mapping profiles.\nChoose the correct keymap that matches the game's input requirements for proper playback.",
             [ControlNames.ButtonSelectMIDIFolder] = "Select a folder containing MIDI files.\nAll MIDI files in the chosen folder will be automatically loaded into the selection menu for easy access.",
-            [ControlNames.ButtonPlaySong] = "Start MIDI playback in-game.\nYou can also press **F5** as a shortcut to play the currently selected MIDI file.",
-            [ControlNames.ButtonStopSong] = "Stop MIDI playback immediately.\nYou can also press **F6** as a shortcut to halt playback.",
+            [ControlNames.ButtonPlaySong] = $"Start MIDI playback in-game.\nYou can also press {Settings.settings.StartPlaybackKey} as a shortcut to play the currently selected MIDI file.",
+            [ControlNames.ButtonStopSong] = $"Stop MIDI playback immediately.\nYou can also press **{Settings.settings.StopPlaybackKey}** as a shortcut to halt playback.",
             [ControlNames.LabelMIDIDeviceLabel] = "Select and connect a MIDI instrument for live input.\nPlay notes on your MIDI device, and they will be sent directly to the game or application in real time.",
             [ControlNames.TrackBarTempo] = "Adjust the playback speed of MIDI notes sent to the game or application.\nMove the slider to speed up or slow down note timing without altering the MIDI file.",
             [ControlNames.TrackBarModifierDelay] = "Set a delay between modifier keys (first key in the midikeymap.json) and key presses.\nUseful for fine-tuning input timing when using key modifiers.",

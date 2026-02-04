@@ -126,6 +126,7 @@ namespace MIDI_Monkey
             // 
             // pictureBoxSignalApp
             // 
+            pictureBoxSignalApp.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             pictureBoxSignalApp.Image = (Image)resources.GetObject("pictureBoxSignalApp.Image");
             pictureBoxSignalApp.Location = new Point(750, 3);
             pictureBoxSignalApp.Name = "pictureBoxSignalApp";
@@ -137,6 +138,7 @@ namespace MIDI_Monkey
             // 
             // pictureBoxDiscord
             // 
+            pictureBoxDiscord.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             pictureBoxDiscord.Image = (Image)resources.GetObject("pictureBoxDiscord.Image");
             pictureBoxDiscord.Location = new Point(786, 3);
             pictureBoxDiscord.Name = "pictureBoxDiscord";
@@ -191,7 +193,7 @@ namespace MIDI_Monkey
             groupBoxMIDIkeyMapProfiles.ForeColor = Color.LightGray;
             groupBoxMIDIkeyMapProfiles.Location = new Point(3, 3);
             groupBoxMIDIkeyMapProfiles.Name = "groupBoxMIDIkeyMapProfiles";
-            groupBoxMIDIkeyMapProfiles.Size = new Size(156, 311);
+            groupBoxMIDIkeyMapProfiles.Size = new Size(181, 311);
             groupBoxMIDIkeyMapProfiles.TabIndex = 1;
             groupBoxMIDIkeyMapProfiles.TabStop = false;
             groupBoxMIDIkeyMapProfiles.Text = "MIDI KeyMap Profiles";
@@ -205,7 +207,7 @@ namespace MIDI_Monkey
             listBoxMIDIKeyMaps.IntegralHeight = false;
             listBoxMIDIKeyMaps.Location = new Point(3, 19);
             listBoxMIDIKeyMaps.Name = "listBoxMIDIKeyMaps";
-            listBoxMIDIKeyMaps.Size = new Size(150, 289);
+            listBoxMIDIKeyMaps.Size = new Size(175, 289);
             listBoxMIDIKeyMaps.TabIndex = 6;
             listBoxMIDIKeyMaps.SelectedIndexChanged += listBoxMIDIKeyMaps_SelectedIndexChanged;
             // 
@@ -223,7 +225,7 @@ namespace MIDI_Monkey
             groupBoxMIDIControls.ForeColor = Color.LightGray;
             groupBoxMIDIControls.Location = new Point(3, 3);
             groupBoxMIDIControls.Name = "groupBoxMIDIControls";
-            groupBoxMIDIControls.Size = new Size(399, 105);
+            groupBoxMIDIControls.Size = new Size(374, 105);
             groupBoxMIDIControls.TabIndex = 2;
             groupBoxMIDIControls.TabStop = false;
             groupBoxMIDIControls.Text = "MIDI Controls";
@@ -237,7 +239,7 @@ namespace MIDI_Monkey
             comboBoxMIDIDevices.ForeColor = Color.LightGray;
             comboBoxMIDIDevices.Location = new Point(93, 63);
             comboBoxMIDIDevices.Name = "comboBoxMIDIDevices";
-            comboBoxMIDIDevices.Size = new Size(178, 23);
+            comboBoxMIDIDevices.Size = new Size(153, 23);
             comboBoxMIDIDevices.TabIndex = 2;
             comboBoxMIDIDevices.TabStop = false;
             // 
@@ -257,7 +259,7 @@ namespace MIDI_Monkey
             buttonUseMidiDevice.FlatAppearance.MouseDownBackColor = Color.Gray;
             buttonUseMidiDevice.FlatAppearance.MouseOverBackColor = Color.Silver;
             buttonUseMidiDevice.FlatStyle = FlatStyle.System;
-            buttonUseMidiDevice.Location = new Point(276, 62);
+            buttonUseMidiDevice.Location = new Point(251, 62);
             buttonUseMidiDevice.Name = "buttonUseMidiDevice";
             buttonUseMidiDevice.Size = new Size(115, 24);
             buttonUseMidiDevice.TabIndex = 0;
@@ -272,11 +274,11 @@ namespace MIDI_Monkey
             buttonStopSong.FlatAppearance.MouseDownBackColor = Color.Gray;
             buttonStopSong.FlatAppearance.MouseOverBackColor = Color.Silver;
             buttonStopSong.FlatStyle = FlatStyle.System;
-            buttonStopSong.Location = new Point(288, 22);
+            buttonStopSong.Location = new Point(263, 22);
             buttonStopSong.Name = "buttonStopSong";
             buttonStopSong.Size = new Size(102, 24);
             buttonStopSong.TabIndex = 0;
-            buttonStopSong.Text = "Stop Song (F6)";
+            buttonStopSong.Text = "Stop Song";
             buttonStopSong.UseVisualStyleBackColor = false;
             buttonStopSong.Click += buttonStopSong_Click;
             // 
@@ -287,11 +289,11 @@ namespace MIDI_Monkey
             buttonPlaySong.FlatAppearance.MouseDownBackColor = Color.Gray;
             buttonPlaySong.FlatAppearance.MouseOverBackColor = Color.Silver;
             buttonPlaySong.FlatStyle = FlatStyle.System;
-            buttonPlaySong.Location = new Point(184, 22);
+            buttonPlaySong.Location = new Point(159, 22);
             buttonPlaySong.Name = "buttonPlaySong";
             buttonPlaySong.Size = new Size(98, 24);
             buttonPlaySong.TabIndex = 0;
-            buttonPlaySong.Text = "Play Song (F5)";
+            buttonPlaySong.Text = "Play Song";
             buttonPlaySong.UseVisualStyleBackColor = false;
             buttonPlaySong.Click += buttonPlaySong_Click;
             // 
@@ -352,8 +354,9 @@ namespace MIDI_Monkey
             splitContainerMain.Panel2.Controls.Add(groupBoxSettings);
             splitContainerMain.Panel2.Controls.Add(groupBoxMIDIControls);
             splitContainerMain.Size = new Size(825, 347);
-            splitContainerMain.SplitterDistance = 415;
+            splitContainerMain.SplitterDistance = 440;
             splitContainerMain.TabIndex = 4;
+            splitContainerMain.SplitterMoved += splitContainerMain_SplitterMoved;
             // 
             // splitContainerProfilesAndFiles
             // 
@@ -371,8 +374,8 @@ namespace MIDI_Monkey
             // 
             splitContainerProfilesAndFiles.Panel2.Controls.Add(groupBoxSelectMIDIFolder);
             splitContainerProfilesAndFiles.Panel2MinSize = 78;
-            splitContainerProfilesAndFiles.Size = new Size(415, 347);
-            splitContainerProfilesAndFiles.SplitterDistance = 161;
+            splitContainerProfilesAndFiles.Size = new Size(440, 347);
+            splitContainerProfilesAndFiles.SplitterDistance = 186;
             splitContainerProfilesAndFiles.TabIndex = 4;
             // 
             // buttonEditKeyMaps
@@ -384,7 +387,7 @@ namespace MIDI_Monkey
             buttonEditKeyMaps.FlatStyle = FlatStyle.System;
             buttonEditKeyMaps.Location = new Point(3, 320);
             buttonEditKeyMaps.Name = "buttonEditKeyMaps";
-            buttonEditKeyMaps.Size = new Size(156, 24);
+            buttonEditKeyMaps.Size = new Size(181, 24);
             buttonEditKeyMaps.TabIndex = 3;
             buttonEditKeyMaps.Text = "MIDI KeyMap Editor";
             buttonEditKeyMaps.UseVisualStyleBackColor = false;
@@ -398,7 +401,7 @@ namespace MIDI_Monkey
             groupBoxDebugLog.ForeColor = Color.LightGray;
             groupBoxDebugLog.Location = new Point(3, 251);
             groupBoxDebugLog.Name = "groupBoxDebugLog";
-            groupBoxDebugLog.Size = new Size(400, 90);
+            groupBoxDebugLog.Size = new Size(375, 90);
             groupBoxDebugLog.TabIndex = 6;
             groupBoxDebugLog.TabStop = false;
             groupBoxDebugLog.Text = "Debug Log";
@@ -412,7 +415,7 @@ namespace MIDI_Monkey
             richTextBoxLog.ForeColor = Color.LightGray;
             richTextBoxLog.Location = new Point(3, 19);
             richTextBoxLog.Name = "richTextBoxLog";
-            richTextBoxLog.Size = new Size(394, 68);
+            richTextBoxLog.Size = new Size(369, 68);
             richTextBoxLog.TabIndex = 0;
             richTextBoxLog.Text = "";
             // 
@@ -432,7 +435,7 @@ namespace MIDI_Monkey
             groupBoxSettings.ForeColor = Color.LightGray;
             groupBoxSettings.Location = new Point(3, 114);
             groupBoxSettings.Name = "groupBoxSettings";
-            groupBoxSettings.Size = new Size(399, 131);
+            groupBoxSettings.Size = new Size(374, 131);
             groupBoxSettings.TabIndex = 5;
             groupBoxSettings.TabStop = false;
             groupBoxSettings.Text = "Settings";
@@ -442,7 +445,7 @@ namespace MIDI_Monkey
             labelModifiedDelay.Anchor = AnchorStyles.Right;
             labelModifiedDelay.AutoSize = true;
             labelModifiedDelay.Font = new Font("Segoe UI", 9F);
-            labelModifiedDelay.Location = new Point(353, 84);
+            labelModifiedDelay.Location = new Point(328, 84);
             labelModifiedDelay.Name = "labelModifiedDelay";
             labelModifiedDelay.Size = new Size(13, 15);
             labelModifiedDelay.TabIndex = 13;
@@ -453,7 +456,7 @@ namespace MIDI_Monkey
             labelModifierDelayLabel.Anchor = AnchorStyles.Right;
             labelModifierDelayLabel.AutoSize = true;
             labelModifierDelayLabel.Font = new Font("Segoe UI", 9F);
-            labelModifierDelayLabel.Location = new Point(122, 84);
+            labelModifierDelayLabel.Location = new Point(97, 84);
             labelModifierDelayLabel.Name = "labelModifierDelayLabel";
             labelModifierDelayLabel.Size = new Size(87, 15);
             labelModifierDelayLabel.TabIndex = 12;
@@ -462,7 +465,7 @@ namespace MIDI_Monkey
             // trackBarModifierDelay
             // 
             trackBarModifierDelay.Anchor = AnchorStyles.Right;
-            trackBarModifierDelay.Location = new Point(215, 72);
+            trackBarModifierDelay.Location = new Point(190, 72);
             trackBarModifierDelay.Maximum = 100;
             trackBarModifierDelay.Name = "trackBarModifierDelay";
             trackBarModifierDelay.Size = new Size(131, 45);
@@ -475,7 +478,7 @@ namespace MIDI_Monkey
             labelTempo.Anchor = AnchorStyles.Right;
             labelTempo.AutoSize = true;
             labelTempo.Font = new Font("Segoe UI", 9F);
-            labelTempo.Location = new Point(353, 34);
+            labelTempo.Location = new Point(328, 34);
             labelTempo.Name = "labelTempo";
             labelTempo.Size = new Size(13, 15);
             labelTempo.TabIndex = 6;
@@ -484,7 +487,7 @@ namespace MIDI_Monkey
             // trackBarTempo
             // 
             trackBarTempo.Anchor = AnchorStyles.Right;
-            trackBarTempo.Location = new Point(215, 21);
+            trackBarTempo.Location = new Point(190, 21);
             trackBarTempo.Maximum = 20;
             trackBarTempo.Minimum = -10;
             trackBarTempo.Name = "trackBarTempo";
@@ -498,7 +501,7 @@ namespace MIDI_Monkey
             labelTempoLabel.Anchor = AnchorStyles.Right;
             labelTempoLabel.AutoSize = true;
             labelTempoLabel.Font = new Font("Segoe UI", 9F);
-            labelTempoLabel.Location = new Point(163, 34);
+            labelTempoLabel.Location = new Point(138, 34);
             labelTempoLabel.Name = "labelTempoLabel";
             labelTempoLabel.Size = new Size(46, 15);
             labelTempoLabel.TabIndex = 4;
@@ -554,8 +557,10 @@ namespace MIDI_Monkey
             // panelResizeHandle
             // 
             panelResizeHandle.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            panelResizeHandle.BackgroundImage = (Image)resources.GetObject("panelResizeHandle.BackgroundImage");
+            panelResizeHandle.BackgroundImageLayout = ImageLayout.Zoom;
             panelResizeHandle.Cursor = Cursors.SizeNWSE;
-            panelResizeHandle.Location = new Point(832, 559);
+            panelResizeHandle.Location = new Point(825, 553);
             panelResizeHandle.Name = "panelResizeHandle";
             panelResizeHandle.Size = new Size(25, 24);
             panelResizeHandle.TabIndex = 5;

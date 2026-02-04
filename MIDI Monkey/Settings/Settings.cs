@@ -1,9 +1,11 @@
 using MIDI_Monkey.Models;
 using Newtonsoft.Json;
 using System;
+using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace MIDI_Monkey
 {
@@ -26,8 +28,10 @@ namespace MIDI_Monkey
             public bool AlwaysOnTop { get; set; } = true;
             public int Speed { get; set; } = 0;
             public int ModifierDelay { get; set; } = 0;
-            public VirtualKey StartPlaybackKey { get; set; } = VirtualKey.F5;
-            public VirtualKey StopPlaybackKey { get; set; } = VirtualKey.F6;
+            public Keys StartPlaybackKey { get; set; } = Keys.F5;
+            public Keys StopPlaybackKey { get; set; } = Keys.F6;
+            public Point WindowSize { get;set; } = new Point(849, 576);
+            public int SplitterMainDistance { get; set; } = 440;
         }
 
         /// <summary>

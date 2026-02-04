@@ -1,0 +1,30 @@
+# MIDI Monkey MidiKeyMap Config v2.0.
+# To create your MIDI Key Mapping, you need to assign each MIDI key to a corresponding keyboard key.
+# Each mapping can include a modifier key (such as Shift or Control) followed by the alphanumeric keyboard key.
+# If you do not want to use a modifier key, simply omit it and use only the alphanumeric key.
+# The configuration follows this structure:
+#   1. MIDI Key: The MIDI note you want to map (0 to 127)
+#   2. Modifier Key (Optional): The modifier key, if any (e.g., LeftShift, RightShift)
+#   3. Alphanumeric Keyboard Key: The key on the keyboard (e.g., Q, W, Number1, Number0)
+#   4. ApplicationName: The process name (without .exe) that this mapping is for
+
+{
+  "ApplicationName": "Warframe.x64",
+  "KeyMappings": {
+    "63": [ "", "Number1" ],
+    "64": [ "", "Number2" ],
+    "65": [ "", "Number3" ],
+    "66": [ "Left", "Number1" ],
+    "67": [ "Left", "Number2" ],
+    "68": [ "Left", "Number3" ],
+    "69": [ "Down", "Number1" ],
+    "70": [ "Down", "Number2" ],
+    "71": [ "Down", "Number3" ],
+    "72": [ "Right", "Number1" ],
+    "73": [ "Right", "Number2" ],
+    "74": [ "Right", "Number3" ],
+    "75": [ "Down", "Number1" ],
+    "76": [ "Down", "Number2" ],
+    "77": [ "Down", "Number3" ]
+  }
+}

@@ -20,14 +20,14 @@ namespace MIDI_Monkey.Helpers
             this.resizeHandle.MouseUp += new MouseEventHandler(ResizeHandle_MouseUp);
         }
 
-        private void ResizeHandle_MouseDown(object sender, MouseEventArgs e)
+        private async void ResizeHandle_MouseDown(object sender, MouseEventArgs e)
         {
             resizing = true;
             resizeCursorPoint = Cursor.Position;
             resizeFormSize = form.Size;
         }
 
-        private void ResizeHandle_MouseMove(object sender, MouseEventArgs e)
+        private async void ResizeHandle_MouseMove(object sender, MouseEventArgs e)
         {
             if (resizing)
             {
@@ -36,9 +36,11 @@ namespace MIDI_Monkey.Helpers
             }
         }
 
-        private void ResizeHandle_MouseUp(object sender, MouseEventArgs e)
+        private async void ResizeHandle_MouseUp(object sender, MouseEventArgs e)
         {
             resizing = false;
+            Settings.settings.WindowSize = new Point(form.Size.Width, form.Size.Height);
+            await Settings.SaveSettingsAsync();
         }
     }
 }

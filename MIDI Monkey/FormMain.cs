@@ -16,7 +16,7 @@ namespace MIDI_Monkey
 {
     public partial class FormMain : Form
     {
-        private const string AppVersion = "v7.0";
+        private const string AppVersion = "v7.1";
 
         // UI Helpers
         private DraggablePanelHelper _draggablePanelHelper;
@@ -52,12 +52,14 @@ namespace MIDI_Monkey
             _midiChannelService = new MidiChannelService();
 
             // Setup UI
+            Settings.Init();
+            LoadSettings();
             InitializeUIComponents();
             InitializeGlobalHotkeys();
-            Settings.Init();
+            
 
             // Load settings and data
-            LoadSettings();
+            
             LoadMidiKeyMapsAsync();
             LoadLastUsedFilesAsync();
         }
@@ -125,6 +127,11 @@ namespace MIDI_Monkey
             trackBarModifierDelay.Value = Settings.settings.ModifierDelay;
             labelModifiedDelay.Text = trackBarModifierDelay.Value.ToString();
             this.TopMost = Settings.settings.AlwaysOnTop;
+            this.Width = Settings.settings.WindowSize.X;
+            this.Height = Settings.settings.WindowSize.Y;
+            splitContainerMain.SplitterDistance = Settings.settings.SplitterMainDistance;
+            buttonPlaySong.Text = $"Play Song ({Settings.settings.StartPlaybackKey})";
+            buttonStopSong.Text = $"Stop Song ({Settings.settings.StopPlaybackKey})";
         }
 
         private async Task SaveSettingsAsync()
@@ -407,14 +414,14 @@ namespace MIDI_Monkey
 
         private void OnGlobalKeyPressed(object? sender, KeyPressedEventArgs e)
         {
-            if (e.Key == Keys.F5 && !_isPlaying)
+            if (e.Key == Settings.settings.StartPlaybackKey && !_isPlaying)
             {
                 if (TryGetGameWindowHandle())
                 {
                     StartPlayback();
                 }
             }
-            else if (e.Key == Keys.F6 && _isPlaying)
+            else if (e.Key == Settings.settings.StopPlaybackKey && _isPlaying)
             {
                 StopPlayback();
             }
@@ -632,6 +639,12 @@ namespace MIDI_Monkey
             // Paint event for panel
         }
 
+        private async void splitContainerMain_SplitterMoved(object sender, SplitterEventArgs e)
+        {
+            Settings.settings.SplitterMainDistance = splitContainerMain.SplitterDistance;
+            await Settings.SaveSettingsAsync();
+        }
+
         #endregion
 
         #region Utility Methods
@@ -692,6 +705,7 @@ namespace MIDI_Monkey
         }
 
         #endregion
+
 
     }
 }

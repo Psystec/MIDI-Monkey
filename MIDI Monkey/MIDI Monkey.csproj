@@ -42,6 +42,9 @@
     <None Update="MIDIKeyMaps\Heartopia_Piano_32row.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="MIDIKeyMaps\Warframe_Shawzin.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="MIDIKeyMaps\OnceHuman_Guitar.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

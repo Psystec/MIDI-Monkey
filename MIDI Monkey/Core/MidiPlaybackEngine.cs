@@ -85,7 +85,7 @@ namespace MIDI_Monkey.Core
                             if (!channelSettings.IsChannelEnabled(midiChannel))
                             {
                                 // Skip this note, channel is disabled
-                                Logging.DebugLog($"Skipping {noteOn.NoteName} {noteOn.NoteNumber} on channel {midiChannel} (disabled)");
+                                Logging.DebugLog($"Skipping Note:{noteOn.NoteNumber} ({noteOn.NoteName}) CH:{midiChannel} (channel disabled)");
                                 continue;
                             }
 
@@ -118,7 +118,11 @@ namespace MIDI_Monkey.Core
                                     _sendKeyAction(actualKey, false, hwnd);
                                 }
 
-                                Logging.DebugLog($"Key Down: {noteOn.NoteName} {noteOn.NoteNumber} CH:{midiChannel} ({string.Join(", ", keys)})");
+                                Logging.DebugLog($"Key Down: {noteOn.NoteName} ({noteOn.NoteNumber}) CH:{midiChannel} ({string.Join(", ", keys)})");
+                            }
+                            else
+                            {
+                                Logging.DebugLog($"Skipping Note:{noteOn.NoteNumber} ({noteOn.NoteName}) CH:{midiChannel} (no note configured)");
                             }
                         }
 
@@ -218,7 +222,6 @@ namespace MIDI_Monkey.Core
                 {
                     if (_activeModifiers[modifier])
                     {
-                        _sendKeyAction(modifier, false, IntPtr.Zero);
                         _sendKeyAction(modifier, false, hwnd);
                         _activeModifiers[modifier] = false;
                         modifiersChanged = true;
