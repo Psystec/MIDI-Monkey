@@ -1,6 +1,7 @@
 using NAudio.Midi;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,6 +38,14 @@ namespace MIDI_Monkey
         private CancellationTokenSource? _cancellationTokenSource;
         private bool _isPlaying = false;
         private bool _loading = true;
+        private int _playbackSession = 0;
+        private long _lastWindowLookupTick = 0;
+
+        // Copies of UI values for the playback thread. Reading the controls from that thread
+        // used Control.Invoke, which made every note wait for the (possibly busy) UI thread.
+        private volatile int _tempoAdjustment = 0;
+        private volatile int _modifierDelay = 0;
+        private volatile bool _repeatSong = false;
 
         public FormMain()
         {
@@ -60,10 +69,11 @@ namespace MIDI_Monkey
 
             // Load settings and data
             
-            LoadMidiKeyMapsAsync();
-            LoadLastUsedFilesAsync();
+            _ = LoadMidiKeyMapsAsync();
+            _ = LoadLastUsedFilesAsync();
         }
 
+        [MemberNotNull(nameof(_draggablePanelHelper), nameof(_resizableFormHelper), nameof(_visualBoard))]
         private void InitializeUIComponents()
         {
             labelAppNameLabel.Text = $"MIDI Monkey {AppVersion}";
@@ -126,6 +136,9 @@ namespace MIDI_Monkey
             labelTempo.Text = trackBarTempo.Value.ToString();
             trackBarModifierDelay.Value = Settings.settings.ModifierDelay;
             labelModifiedDelay.Text = trackBarModifierDelay.Value.ToString();
+            _tempoAdjustment = trackBarTempo.Value;
+            _modifierDelay = trackBarModifierDelay.Value;
+            _repeatSong = checkBoxRepeatSong.Checked;
             this.TopMost = Settings.settings.AlwaysOnTop;
             this.Width = Settings.settings.WindowSize.X;
             this.Height = Settings.settings.WindowSize.Y;
@@ -391,13 +404,13 @@ namespace MIDI_Monkey
 
                     if (_keyMapService.TryGetValue(noteNumber, out var keys) && keys.Count > 0)
                     {
-                        _ = _visualBoard.HighlightKey(noteNumber, 200);
+                        _visualBoard.HighlightKey(noteNumber, 200);
                         await SendKeysAsync(keys);
                         Logging.DebugLog($"MIDI Key: {noteEvent.NoteName} ({noteNumber}) -> Keys: {string.Join(", ", keys)}");
                     }
                     else
                     {
-                        _ = _visualBoard.HighlightKey(noteNumber, 100);
+                        _visualBoard.HighlightKey(noteNumber, 100);
                         Logging.DebugLog($"MIDI Key not mapped: {noteEvent.NoteName} ({noteNumber})");
                     }
                 }
@@ -414,14 +427,23 @@ namespace MIDI_Monkey
 
         private void OnGlobalKeyPressed(object? sender, KeyPressedEventArgs e)
         {
-            if (e.Key == Settings.settings.StartPlaybackKey && !_isPlaying)
+            // Raised on the hook thread: hand off to the UI thread and return immediately.
+            if (IsDisposed || !IsHandleCreated)
+                return;
+
+            BeginInvoke(new Action(() => HandleGlobalKey(e.Key)));
+        }
+
+        private void HandleGlobalKey(Keys key)
+        {
+            if (key == Settings.settings.StartPlaybackKey && !_isPlaying)
             {
                 if (TryGetGameWindowHandle())
                 {
                     StartPlayback();
                 }
             }
-            else if (e.Key == Settings.settings.StopPlaybackKey && _isPlaying)
+            else if (key == Settings.settings.StopPlaybackKey && _isPlaying)
             {
                 StopPlayback();
             }
@@ -467,9 +489,18 @@ namespace MIDI_Monkey
 
                 Logging.DebugLog($"Playing Song: {selectedMidiFile}");
 
+                // Make sure an old playback is fully cancelled before starting a new one.
+                _cancellationTokenSource?.Cancel();
                 _cancellationTokenSource?.Dispose();
                 _cancellationTokenSource = new CancellationTokenSource();
                 _isPlaying = true;
+                int session = ++_playbackSession;
+
+                // Focus the game once. After this, keys are only sent while it has focus.
+                if (!Win32Api.FocusWindow(_gameWindowHandle))
+                {
+                    Logging.DebugLog("Could not bring the game to the front. Click into the game window - keys are only sent while it is focused.");
+                }
 
                 InitializePlaybackEngine();
 
@@ -481,8 +512,16 @@ namespace MIDI_Monkey
                             Logging.DebugLog($"Playback error: {t.Exception?.InnerException?.Message}");
                         }
 
+                        if (IsDisposed || !IsHandleCreated)
+                            return;
+
                         this.BeginInvoke(new Action(() =>
                         {
+                            // Ignore an old playback finishing after a new one started,
+                            // otherwise the new song can no longer be stopped.
+                            if (session != _playbackSession)
+                                return;
+
                             _isPlaying = false;
                             Logging.DebugLog("Playback completed or was stopped.");
                         }));
@@ -512,14 +551,15 @@ namespace MIDI_Monkey
 
         private void InitializePlaybackEngine()
         {
+            uint gameProcessId = Win32Api.GetWindowProcessId(_gameWindowHandle);
+
             _playbackEngine = new MidiPlaybackEngine(
                 midiKeyMapService: _keyMapService,
-                sendKeyAction: Win32Api.SendKey,
-                getTargetWindowHandle: () => _gameWindowHandle,
-                getTempoAdjustment: () => GetTrackBarValueSafe(trackBarTempo),
-                getModifierDelay: () => GetTrackBarValueSafe(trackBarModifierDelay),
-                highlightKeyAction: (note, delay) => _visualBoard.HighlightKey(note, delay),
-                getRepeatSetting: () => checkBoxRepeatSong.Checked,
+                isTargetFocused: () => Win32Api.IsProcessFocused(gameProcessId),
+                getTempoAdjustment: () => _tempoAdjustment,
+                getModifierDelay: () => _modifierDelay,
+                highlightKeyAction: (note, duration) => _visualBoard.HighlightKey(note, duration),
+                getRepeatSetting: () => _repeatSong,
                 getChannelSettings: () => _midiChannelService
             );
         }
@@ -543,15 +583,33 @@ namespace MIDI_Monkey
 
         private void EnsureGameWindowHandle()
         {
-            if (_gameWindowHandle == IntPtr.Zero)
-            {
-                _gameWindowHandle = _processWindowService.GetWindowHandle(_keyMapService.CurrentApplicationName, silent: true);
-            }
+            // The game may have been restarted since we found it.
+            if (_gameWindowHandle != IntPtr.Zero && !Win32Api.IsWindowValid(_gameWindowHandle))
+                _gameWindowHandle = IntPtr.Zero;
+
+            if (_gameWindowHandle != IntPtr.Zero)
+                return;
+
+            // Looking up a process enumerates every process on the PC, so don't do it on every note.
+            long now = Environment.TickCount64;
+            if (now - Interlocked.Read(ref _lastWindowLookupTick) < 2000)
+                return;
+            Interlocked.Exchange(ref _lastWindowLookupTick, now);
+
+            _gameWindowHandle = _processWindowService.GetWindowHandle(_keyMapService.CurrentApplicationName, silent: true);
         }
 
+        /// <summary>
+        /// Live MIDI device input: press the mapped keys, but only while the game has focus.
+        /// </summary>
         private async Task SendKeysAsync(List<VirtualKey> keys)
         {
-            var modifierDelay = GetTrackBarValueSafe(trackBarModifierDelay);
+            if (!Win32Api.IsWindowFocused(_gameWindowHandle))
+            {
+                return;
+            }
+
+            var modifierDelay = _modifierDelay;
 
             // Handle modifiers
             if (keys.Count > 1)
@@ -559,7 +617,7 @@ namespace MIDI_Monkey
                 // Press modifiers
                 for (int i = 0; i < keys.Count - 1; i++)
                 {
-                    Win32Api.SendKey(keys[i], true, _gameWindowHandle);
+                    Win32Api.SendKey(keys[i], true);
                 }
 
                 if (modifierDelay > 0)
@@ -570,15 +628,14 @@ namespace MIDI_Monkey
 
             // Press and release the main key
             var mainKey = keys[^1];
-            Win32Api.SendKey(mainKey, true, _gameWindowHandle);
-            Win32Api.SendKey(mainKey, false, _gameWindowHandle);
+            Win32Api.SendKeys(new[] { (mainKey, true), (mainKey, false) });
 
             // Release modifiers
             if (keys.Count > 1)
             {
                 for (int i = keys.Count - 2; i >= 0; i--)
                 {
-                    Win32Api.SendKey(keys[i], false, _gameWindowHandle);
+                    Win32Api.SendKey(keys[i], false);
                 }
             }
         }
@@ -599,6 +656,7 @@ namespace MIDI_Monkey
 
         private async void checkBoxRepeatSong_CheckedChanged(object sender, EventArgs e)
         {
+            _repeatSong = checkBoxRepeatSong.Checked;
             await SaveSettingsAsync();
         }
 
@@ -610,12 +668,14 @@ namespace MIDI_Monkey
         private async void trackBarTempo_Scroll(object sender, EventArgs e)
         {
             labelTempo.Text = trackBarTempo.Value.ToString();
+            _tempoAdjustment = trackBarTempo.Value;
             await SaveSettingsAsync();
         }
 
         private async void trackBarModifierDelay_Scroll(object sender, EventArgs e)
         {
             labelModifiedDelay.Text = trackBarModifierDelay.Value.ToString();
+            _modifierDelay = trackBarModifierDelay.Value;
             await SaveSettingsAsync();
         }
 
@@ -662,15 +722,6 @@ namespace MIDI_Monkey
             {
                 listBox.SelectedIndex = 0;
             }
-        }
-
-        private int GetTrackBarValueSafe(TrackBar trackBar)
-        {
-            if (trackBar.InvokeRequired)
-            {
-                return (int)trackBar.Invoke(new Func<int>(() => trackBar.Value));
-            }
-            return trackBar.Value;
         }
 
         #endregion

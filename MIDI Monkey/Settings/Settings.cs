@@ -4,6 +4,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -69,29 +70,78 @@ namespace MIDI_Monkey
             }
         }
 
+        // Only one save writes the file at a time. Settings can change many times in a row
+        // (dragging a slider, moving the splitter), and overlapping saves used to fight over
+        // settings.json ("being used by another process").
+        private static readonly SemaphoreSlim _saveGate = new SemaphoreSlim(1, 1);
+        private static int _saveRequested = 0;
+
         /// <summary>
-        /// Save settings asynchronously (non-blocking)
+        /// Save settings asynchronously (non-blocking).
+        /// If a save is already running, this request is merged into it: the running save
+        /// writes again afterwards with the latest values, so the file always ends up current.
         /// </summary>
         public static async Task SaveSettingsAsync()
         {
             if (!_isInitialized)
                 Init();
 
-            try
-            {
-                string json = JsonConvert.SerializeObject(settings, Formatting.Indented);
+            Interlocked.Exchange(ref _saveRequested, 1);
 
-                // Use async file writing with UTF8 encoding and buffering
-                using (var fileStream = new FileStream(settingsFile, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true))
-                using (var writer = new StreamWriter(fileStream, Encoding.UTF8))
+            while (true)
+            {
+                if (!await _saveGate.WaitAsync(0).ConfigureAwait(false))
                 {
-                    await writer.WriteAsync(json);
-                    await writer.FlushAsync();
+                    return; // The running save will pick up our request.
+                }
+
+                try
+                {
+                    while (Interlocked.Exchange(ref _saveRequested, 0) == 1)
+                    {
+                        string json = JsonConvert.SerializeObject(settings, Formatting.Indented);
+                        await WriteSettingsFileAsync(json).ConfigureAwait(false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Utilities.Logging.DebugLog($"Error saving settings: {ex.Message}");
+                }
+                finally
+                {
+                    _saveGate.Release();
+                }
+
+                // A request may have arrived between finishing the loop and releasing the gate.
+                if (Volatile.Read(ref _saveRequested) == 0)
+                {
+                    return;
                 }
             }
-            catch (Exception ex)
+        }
+
+        /// <summary>
+        /// Writes to a temporary file and then replaces settings.json, so a crash or a
+        /// second reader never sees a half written file. Retries briefly if another program
+        /// (antivirus, cloud sync) is holding the file.
+        /// </summary>
+        private static async Task WriteSettingsFileAsync(string json)
+        {
+            string tempFile = settingsFile + ".tmp";
+            const int maxAttempts = 5;
+
+            for (int attempt = 1; ; attempt++)
             {
-                Utilities.Logging.DebugLog($"Error saving settings: {ex.Message}");
+                try
+                {
+                    await File.WriteAllTextAsync(tempFile, json, Encoding.UTF8).ConfigureAwait(false);
+                    File.Move(tempFile, settingsFile, overwrite: true);
+                    return;
+                }
+                catch (IOException) when (attempt < maxAttempts)
+                {
+                    await Task.Delay(50 * attempt).ConfigureAwait(false);
+                }
             }
         }
 
@@ -103,17 +153,20 @@ namespace MIDI_Monkey
             if (!_isInitialized)
                 Init();
 
+            // The async save never needs the UI thread while holding the gate, so waiting here is safe.
+            _saveGate.Wait();
             try
             {
-                lock (_settingsLock)
-                {
-                    string json = JsonConvert.SerializeObject(settings, Formatting.Indented);
-                    File.WriteAllText(settingsFile, json, Encoding.UTF8);
-                }
+                string json = JsonConvert.SerializeObject(settings, Formatting.Indented);
+                WriteSettingsFileAsync(json).GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
                 Utilities.Logging.DebugLog($"Error saving settings (sync): {ex.Message}");
+            }
+            finally
+            {
+                _saveGate.Release();
             }
         }
 
@@ -210,7 +263,7 @@ namespace MIDI_Monkey
                 if (File.Exists(settingsFile))
                 {
                     string backupFile = Path.Combine(
-                        Path.GetDirectoryName(settingsFile),
+                        Path.GetDirectoryName(settingsFile) ?? AppDomain.CurrentDomain.BaseDirectory,
                         $"settings_corrupted_{DateTime.Now:yyyyMMdd_HHmmss}.json"
                     );
                     File.Copy(settingsFile, backupFile, true);

@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,7 +37,7 @@ namespace MIDI_Monkey.Services
         {
             EnsureDirectoryExists();
             var files = Directory.GetFiles(_midiKeyMapsDirectory, "*.json");
-            return files.Select(Path.GetFileNameWithoutExtension).ToList();
+            return files.Select(file => Path.GetFileNameWithoutExtension(file)).ToList();
         }
 
         public async Task LoadKeyMapAsync(string keyMapName)
@@ -134,7 +135,7 @@ namespace MIDI_Monkey.Services
 
         public bool ContainsKey(int midiKey) => _currentMapping.ContainsKey(midiKey);
 
-        public bool TryGetValue(int midiKey, out List<VirtualKey> keys)
+        public bool TryGetValue(int midiKey, [MaybeNullWhen(false)] out List<VirtualKey> keys)
         {
             return _currentMapping.TryGetValue(midiKey, out keys);
         }

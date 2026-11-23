@@ -11,31 +11,45 @@ using System.Threading.Tasks;
 
 namespace MIDI_Monkey.Core
 {
+    /// <summary>
+    /// Plays a MIDI file by sending key presses to the game.
+    ///
+    /// Timing design:
+    /// - Playback runs on its own high priority thread, so UI work (scrolling, repainting,
+    ///   logging) can no longer delay notes.
+    /// - Every note's play time is calculated up front from the full tempo map, and the engine
+    ///   waits until a stopwatch reaches that absolute time. Errors no longer add up note after note.
+    /// - Notes that start at the same time (chords) are sent together in one SendInput call.
+    /// - Keys are only sent while the game has focus.
+    /// </summary>
     public class MidiPlaybackEngine
     {
-        private Dictionary<VirtualKey, bool> _activeModifiers = new Dictionary<VirtualKey, bool>();
+        // If the engine falls this far behind (e.g. the PC stalled), skip ahead instead of
+        // firing a burst of late notes.
+        private const double MaxLatenessMs = 250.0;
+
+        private readonly Dictionary<VirtualKey, bool> _activeModifiers = new Dictionary<VirtualKey, bool>();
+        private readonly object _modifierLock = new object();
+
         private readonly MidiKeyMapService _midiKeyMapService;
-        private readonly Action<VirtualKey, bool, IntPtr> _sendKeyAction;
-        private readonly Func<IntPtr> _getTargetWindowHandle;
+        private readonly Func<bool> _isTargetFocused;
         private readonly Func<int> _getTempoAdjustment;
         private readonly Func<int> _getModifierDelay;
-        private readonly Func<int, int, Task> _highlightKeyAction;
+        private readonly Action<int, int> _highlightKeyAction;
         private readonly Func<bool> _getRepeatSetting;
-        private Func<MidiChannelService> _getChannelSettings;
+        private readonly Func<MidiChannelService> _getChannelSettings;
 
         public MidiPlaybackEngine(
             MidiKeyMapService midiKeyMapService,
-            Action<VirtualKey, bool, IntPtr> sendKeyAction,
-            Func<IntPtr> getTargetWindowHandle,
+            Func<bool> isTargetFocused,
             Func<int> getTempoAdjustment,
             Func<int> getModifierDelay,
-            Func<int, int, Task> highlightKeyAction,
+            Action<int, int> highlightKeyAction,
             Func<bool> getRepeatSetting,
             Func<MidiChannelService> getChannelSettings)
         {
             _midiKeyMapService = midiKeyMapService ?? throw new ArgumentNullException(nameof(midiKeyMapService));
-            _sendKeyAction = sendKeyAction;
-            _getTargetWindowHandle = getTargetWindowHandle ?? throw new ArgumentNullException(nameof(getTargetWindowHandle));
+            _isTargetFocused = isTargetFocused ?? throw new ArgumentNullException(nameof(isTargetFocused));
             _getTempoAdjustment = getTempoAdjustment;
             _getModifierDelay = getModifierDelay;
             _highlightKeyAction = highlightKeyAction;
@@ -43,221 +57,356 @@ namespace MIDI_Monkey.Core
             _getChannelSettings = getChannelSettings;
         }
 
-        public async Task PlayMidiAsync(string midiFilePath, CancellationToken token)
+        /// <summary>
+        /// One note-on with its exact play time in milliseconds from the start of the song.
+        /// </summary>
+        private readonly struct ScheduledNote
+        {
+            public ScheduledNote(long tick, double timeMs, int noteNumber, string noteName, int channel)
+            {
+                Tick = tick;
+                TimeMs = timeMs;
+                NoteNumber = noteNumber;
+                NoteName = noteName;
+                Channel = channel;
+            }
+
+            public long Tick { get; }
+            public double TimeMs { get; }
+            public int NoteNumber { get; }
+            public string NoteName { get; }
+            public int Channel { get; } // 1-16
+        }
+
+        /// <summary>
+        /// Starts playback on a dedicated thread. The task completes when the song ends,
+        /// and is cancelled when the token is cancelled.
+        /// </summary>
+        public Task PlayMidiAsync(string midiFilePath, CancellationToken token)
         {
             if (string.IsNullOrEmpty(midiFilePath))
             {
                 throw new ArgumentException("MIDI file path cannot be empty", nameof(midiFilePath));
             }
 
+            var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            var thread = new Thread(() =>
+            {
+                try
+                {
+                    PlayMidi(midiFilePath, token);
+                    completion.TrySetResult();
+                }
+                catch (OperationCanceledException)
+                {
+                    completion.TrySetCanceled(token);
+                }
+                catch (Exception ex)
+                {
+                    completion.TrySetException(ex);
+                }
+            })
+            {
+                IsBackground = true,
+                Priority = ThreadPriority.Highest,
+                Name = "MIDI Monkey Playback"
+            };
+
+            thread.Start();
+            return completion.Task;
+        }
+
+        private void PlayMidi(string midiFilePath, CancellationToken token)
+        {
+            using var timer = new PreciseTimer();
+
             try
             {
-                MidiFile midiFile = new MidiFile(midiFilePath, false);
-                int ticksPerQuarterNote = midiFile.DeltaTicksPerQuarterNote;
-                int tempo = GetInitialTempo(midiFile);
-
-                var allEvents = CollectMidiEvents(midiFile);
-                Logging.DebugLog($"Total MIDI events to play: {allEvents.Count}");
+                var midiFile = new MidiFile(midiFilePath, false);
+                var notes = BuildSchedule(midiFile);
+                Logging.DebugLog($"Total MIDI notes to play: {notes.Count}");
 
                 bool playOnce = true;
 
-                while ((_getRepeatSetting() || playOnce) && !token.IsCancellationRequested)
+                while ((playOnce || _getRepeatSetting()) && !token.IsCancellationRequested)
                 {
-                    int lastTime = 0;
-                    var stopwatch = new Stopwatch();
-                    stopwatch.Start();
-
-                    foreach (var (midiEvent, absoluteTime) in allEvents)
-                    {
-                        if (token.IsCancellationRequested)
-                        {
-                            Logging.DebugLog("Playback cancelled");
-                            return;
-                        }
-
-                        if (midiEvent is NoteOnEvent noteOn && noteOn.Velocity > 0)
-                        {
-
-                            // Check if this channel is enabled
-                            var channelSettings = _getChannelSettings();
-                            int midiChannel = noteOn.Channel + 1;
-
-                            if (!channelSettings.IsChannelEnabled(midiChannel))
-                            {
-                                // Skip this note, channel is disabled
-                                Logging.DebugLog($"Skipping Note:{noteOn.NoteNumber} ({noteOn.NoteName}) CH:{midiChannel} (channel disabled)");
-                                continue;
-                            }
-
-                            if (_midiKeyMapService.TryGetValue(noteOn.NoteNumber, out var keys))
-                            {
-                                int delay = CalculateDelay(absoluteTime, lastTime, tempo, ticksPerQuarterNote);
-                                await Task.Delay(Math.Max(1, delay), token);
-
-                                lastTime = absoluteTime;
-
-                                _ = _highlightKeyAction(noteOn.NoteNumber, Math.Max(100, delay));
-
-                                bool modifiersChanged = HandleModifiers(keys);
-
-                                if (modifiersChanged)
-                                {
-                                    int modifierDelay = _getModifierDelay();
-                                    if (modifierDelay > 0)
-                                    {
-                                        Logging.DebugLog($"Modifier change detected - delaying {modifierDelay}ms");
-                                        await Task.Delay(modifierDelay, token);
-                                    }
-                                }
-
-                                if (keys.Count > 0)
-                                {
-                                    var hwnd = _getTargetWindowHandle();
-                                    var actualKey = keys.Last();
-                                    _sendKeyAction(actualKey, true, hwnd);
-                                    _sendKeyAction(actualKey, false, hwnd);
-                                }
-
-                                Logging.DebugLog($"Key Down: {noteOn.NoteName} ({noteOn.NoteNumber}) CH:{midiChannel} ({string.Join(", ", keys)})");
-                            }
-                            else
-                            {
-                                Logging.DebugLog($"Skipping Note:{noteOn.NoteNumber} ({noteOn.NoteName}) CH:{midiChannel} (no note configured)");
-                            }
-                        }
-
-                        if (token.IsCancellationRequested)
-                        {
-                            Logging.DebugLog("Playback cancelled during note processing");
-                            return;
-                        }
-                    }
-
-                    stopwatch.Stop();
-                    Logging.DebugLog($"Playback completed in {stopwatch.ElapsedMilliseconds}ms");
-
+                    PlayOnce(notes, timer, token);
                     playOnce = false;
                 }
 
-                HandleModifiers(new List<VirtualKey>());
+                ReleaseAllModifiers();
                 Logging.DebugLog("Song Ended");
             }
             catch (OperationCanceledException)
             {
                 Logging.DebugLog("Playback was cancelled");
-                HandleModifiers(new List<VirtualKey>());
+                ReleaseAllModifiers();
                 throw;
             }
             catch (Exception ex)
             {
                 Logging.DebugLog($"Error during MIDI playback: {ex.Message}");
+                ReleaseAllModifiers();
                 throw;
             }
         }
 
-        public void ReleaseAllModifiers()
+        private void PlayOnce(List<ScheduledNote> notes, PreciseTimer timer, CancellationToken token)
         {
-            var hwnd = _getTargetWindowHandle();
-            foreach (var modifier in _activeModifiers.Keys.ToList())
+            var stopwatch = Stopwatch.StartNew();
+            bool? wasFocused = null;
+
+            // Position on our own timeline (ms). The Speed slider adjusts each gap, so this is
+            // advanced group by group instead of using the raw note time directly.
+            double timelineMs = 0;
+            double previousNoteTimeMs = 0;
+            bool first = true;
+
+            int index = 0;
+            while (index < notes.Count)
             {
-                if (_activeModifiers[modifier])
+                token.ThrowIfCancellationRequested();
+
+                // Collect every note that starts on the same tick (a chord).
+                long groupTick = notes[index].Tick;
+                int groupEnd = index;
+                while (groupEnd < notes.Count && notes[groupEnd].Tick == groupTick)
                 {
-                    _sendKeyAction(modifier, false, hwnd);
-                    _activeModifiers[modifier] = false;
+                    groupEnd++;
                 }
-            }
-        }
 
-        private int GetInitialTempo(MidiFile midiFile)
-        {
-            foreach (var track in midiFile.Events)
-            {
-                var tempoEvent = track.OfType<TempoEvent>().FirstOrDefault();
-                if (tempoEvent != null)
+                double noteTimeMs = notes[index].TimeMs;
+                double gapMs = first ? noteTimeMs : noteTimeMs - previousNoteTimeMs;
+                first = false;
+                previousNoteTimeMs = noteTimeMs;
+
+                // Same behaviour as before: each Speed step shortens the gap between notes by 5ms.
+                double adjustedGap = Math.Max(0, gapMs - _getTempoAdjustment() * 5.0);
+                timelineMs += adjustedGap;
+
+                // If we are badly behind (PC stall), move the timeline instead of bursting notes.
+                double now = stopwatch.Elapsed.TotalMilliseconds;
+                if (now - timelineMs > MaxLatenessMs)
                 {
-                    return tempoEvent.MicrosecondsPerQuarterNote;
+                    timelineMs = now;
                 }
-            }
 
-            return 500000;
-        }
+                timer.WaitUntil(stopwatch, timelineMs, token);
 
-        private List<(MidiEvent midiEvent, int absoluteTime)> CollectMidiEvents(MidiFile midiFile)
-        {
-            var allEvents = new List<(MidiEvent, int)>();
-            int[] absoluteTimes = new int[midiFile.Tracks];
-
-            for (int trackIndex = 0; trackIndex < midiFile.Events.Tracks; trackIndex++)
-            {
-                foreach (MidiEvent midiEvent in midiFile.Events[trackIndex])
+                // Only press keys while the game has focus, otherwise keys go to other windows.
+                bool focused = _isTargetFocused();
+                if (focused != wasFocused)
                 {
-                    absoluteTimes[trackIndex] += midiEvent.DeltaTime;
-
-                    if (midiEvent is NoteOnEvent noteOnEvent && noteOnEvent.Velocity > 0)
+                    if (!focused)
                     {
-                        allEvents.Add((midiEvent, absoluteTimes[trackIndex]));
+                        ReleaseAllModifiers();
+                        Logging.DebugLog("Game window is not focused - not sending keys until it is focused again.");
+                    }
+                    else if (wasFocused == false)
+                    {
+                        Logging.DebugLog("Game window focused again - sending keys.");
+                    }
+                    wasFocused = focused;
+                }
+
+                PlayGroup(notes, index, groupEnd, focused, stopwatch, timer, ref timelineMs, token);
+
+                index = groupEnd;
+            }
+
+            Logging.DebugLog($"Playback completed in {stopwatch.ElapsedMilliseconds}ms");
+        }
+
+        private void PlayGroup(List<ScheduledNote> notes, int start, int end, bool focused,
+            Stopwatch stopwatch, PreciseTimer timer, ref double timelineMs, CancellationToken token)
+        {
+            var channelSettings = _getChannelSettings();
+
+            // Keys that share the same modifiers can be pressed at the exact same moment.
+            // Notes that need different modifiers must be pressed one after another.
+            var pending = new List<(List<VirtualKey> modifiers, VirtualKey key)>();
+
+            for (int i = start; i < end; i++)
+            {
+                var note = notes[i];
+
+                if (!channelSettings.IsChannelEnabled(note.Channel))
+                {
+                    continue;
+                }
+
+                if (!_midiKeyMapService.TryGetValue(note.NoteNumber, out var keys) || keys.Count == 0)
+                {
+                    continue;
+                }
+
+                _highlightKeyAction(note.NoteNumber, 100);
+
+                if (!focused)
+                {
+                    continue;
+                }
+
+                pending.Add((keys.Take(keys.Count - 1).ToList(), keys[^1]));
+                Logging.DebugLog($"Key Down: {note.NoteName} ({note.NoteNumber}) CH:{note.Channel} ({string.Join(", ", keys)})");
+            }
+
+            if (pending.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var modifierGroup in pending.GroupBy(p => string.Join(",", p.modifiers)))
+            {
+                var modifiers = modifierGroup.First().modifiers;
+
+                if (HandleModifiers(modifiers))
+                {
+                    int modifierDelay = _getModifierDelay();
+                    if (modifierDelay > 0)
+                    {
+                        // Give the game time to register the modifier, and push the timeline
+                        // back by the same amount so the following notes keep their spacing.
+                        double target = stopwatch.Elapsed.TotalMilliseconds + modifierDelay;
+                        timer.WaitUntil(stopwatch, target, token);
+                        timelineMs = Math.Max(timelineMs, target);
                     }
                 }
+
+                var inputs = new List<(VirtualKey key, bool keyDown)>();
+                foreach (var (_, key) in modifierGroup)
+                {
+                    inputs.Add((key, true));
+                }
+                foreach (var (_, key) in modifierGroup)
+                {
+                    inputs.Add((key, false));
+                }
+
+                Win32Api.SendKeys(inputs);
             }
-
-            allEvents.Sort((x, y) => x.Item2.CompareTo(y.Item2));
-            return allEvents;
         }
 
-        private int CalculateDelay(int absoluteTime, int lastTime, int tempo, int ticksPerQuarterNote)
+        /// <summary>
+        /// Releases any modifier keys the engine is holding down.
+        /// Safe to call from any thread.
+        /// </summary>
+        public void ReleaseAllModifiers()
         {
-            int delay = (absoluteTime - lastTime) * (tempo / ticksPerQuarterNote) / 1000;
-            delay += _getTempoAdjustment() * -5;
-            return Math.Max(0, delay);
-        }
-
-        private bool HandleModifiers(List<VirtualKey> keys)
-        {
-            bool modifiersChanged = false;
-            var hwnd = _getTargetWindowHandle();
-
-            if (keys == null || keys.Count <= 1)
+            lock (_modifierLock)
             {
                 foreach (var modifier in _activeModifiers.Keys.ToList())
                 {
                     if (_activeModifiers[modifier])
                     {
-                        _sendKeyAction(modifier, false, hwnd);
+                        Win32Api.SendKey(modifier, false);
+                        _activeModifiers[modifier] = false;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Presses/releases modifiers so exactly <paramref name="currentModifiers"/> are held.
+        /// Returns true if anything changed.
+        /// </summary>
+        private bool HandleModifiers(List<VirtualKey> currentModifiers)
+        {
+            lock (_modifierLock)
+            {
+                bool modifiersChanged = false;
+
+                foreach (var modifier in _activeModifiers.Keys.ToList())
+                {
+                    if (_activeModifiers[modifier] && !currentModifiers.Contains(modifier))
+                    {
+                        Win32Api.SendKey(modifier, false);
                         _activeModifiers[modifier] = false;
                         modifiersChanged = true;
                     }
                 }
+
+                foreach (var modifier in currentModifiers)
+                {
+                    if (!_activeModifiers.TryGetValue(modifier, out bool isDown) || !isDown)
+                    {
+                        Win32Api.SendKey(modifier, true);
+                        _activeModifiers[modifier] = true;
+                        modifiersChanged = true;
+                    }
+                }
+
                 return modifiersChanged;
             }
+        }
 
-            var currentModifiers = keys.Take(keys.Count - 1).ToList();
-
-            foreach (var modifier in _activeModifiers.Keys.ToList())
+        /// <summary>
+        /// Builds the list of note-ons with exact millisecond times, honouring every tempo
+        /// change in the file (previously only the first tempo was used).
+        /// </summary>
+        private static List<ScheduledNote> BuildSchedule(MidiFile midiFile)
+        {
+            int ticksPerQuarterNote = midiFile.DeltaTicksPerQuarterNote;
+            if (ticksPerQuarterNote <= 0)
             {
-                if (_activeModifiers[modifier] && !currentModifiers.Contains(modifier))
+                ticksPerQuarterNote = 480;
+            }
+
+            var tempoChanges = new List<(long tick, int microsecondsPerQuarter)>();
+            var noteOns = new List<(long tick, NoteOnEvent noteOn)>();
+
+            for (int trackIndex = 0; trackIndex < midiFile.Events.Tracks; trackIndex++)
+            {
+                long absoluteTick = 0;
+                foreach (MidiEvent midiEvent in midiFile.Events[trackIndex])
                 {
-                    _sendKeyAction(modifier, false, hwnd);
-                    _activeModifiers[modifier] = false;
-                    modifiersChanged = true;
+                    absoluteTick += midiEvent.DeltaTime;
+
+                    if (midiEvent is TempoEvent tempoEvent)
+                    {
+                        tempoChanges.Add((absoluteTick, tempoEvent.MicrosecondsPerQuarterNote));
+                    }
+                    else if (midiEvent is NoteOnEvent noteOn && noteOn.Velocity > 0)
+                    {
+                        noteOns.Add((absoluteTick, noteOn));
+                    }
                 }
             }
 
-            foreach (var modifier in currentModifiers)
+            // Stable sort by tick keeps the original track order for notes on the same tick.
+            tempoChanges = tempoChanges.OrderBy(t => t.tick).ToList();
+            noteOns = noteOns.OrderBy(n => n.tick).ToList();
+
+            var schedule = new List<ScheduledNote>(noteOns.Count);
+
+            int tempo = 500000; // MIDI default: 120 BPM
+            long segmentStartTick = 0;
+            double segmentStartMs = 0;
+            int tempoIndex = 0;
+
+            foreach (var (tick, noteOn) in noteOns)
             {
-                if (!_activeModifiers.ContainsKey(modifier))
+                // Apply every tempo change at or before this note.
+                while (tempoIndex < tempoChanges.Count && tempoChanges[tempoIndex].tick <= tick)
                 {
-                    _activeModifiers[modifier] = false;
+                    long changeTick = tempoChanges[tempoIndex].tick;
+                    segmentStartMs += TicksToMs(changeTick - segmentStartTick, tempo, ticksPerQuarterNote);
+                    segmentStartTick = changeTick;
+                    tempo = tempoChanges[tempoIndex].microsecondsPerQuarter;
+                    tempoIndex++;
                 }
 
-                if (!_activeModifiers[modifier])
-                {
-                    _sendKeyAction(modifier, true, hwnd);
-                    _activeModifiers[modifier] = true;
-                    modifiersChanged = true;
-                }
+                double timeMs = segmentStartMs + TicksToMs(tick - segmentStartTick, tempo, ticksPerQuarterNote);
+                schedule.Add(new ScheduledNote(tick, timeMs, noteOn.NoteNumber, noteOn.NoteName, noteOn.Channel));
             }
 
-            return modifiersChanged;
+            return schedule;
+        }
+
+        private static double TicksToMs(long ticks, int microsecondsPerQuarter, int ticksPerQuarterNote)
+        {
+            return ticks * (double)microsecondsPerQuarter / ticksPerQuarterNote / 1000.0;
         }
     }
 }

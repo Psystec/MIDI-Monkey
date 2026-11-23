@@ -60,12 +60,7 @@
   </application>
   -->
 
-	<!-- DPI Unaware Settings -->
-	<application xmlns="urn:schemas-microsoft-com:asm.v3">
-		<windowsSettings>
-			<dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">false</dpiAware>
-		</windowsSettings>
-	</application>
+	<!-- DPI mode is set by <ApplicationHighDpiMode> in the .csproj (WinForms warning WFO0003). -->
 
   <!-- Enable themes for Windows common controls and dialogs (Windows XP and later) -->
   <!--

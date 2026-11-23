@@ -43,7 +43,7 @@ namespace MIDI_Monkey.Helpers
             {
                 return Directory.GetFiles(folderPath, "*.mid")
                     .Union(Directory.GetFiles(folderPath, "*.midi"))
-                    .Select(Path.GetFileName)
+                    .Select(file => Path.GetFileName(file))
                     .ToArray();
             });
         }

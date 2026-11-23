@@ -42,7 +42,7 @@ namespace MIDI_Monkey.Helpers
         {
             foreach (Control control in controls)
             {
-                if (ToolTips.TryGetValue(control.Name, out string tooltipText))
+                if (ToolTips.TryGetValue(control.Name, out string? tooltipText))
                 {
                     toolTip.SetToolTip(control, tooltipText);
                 }

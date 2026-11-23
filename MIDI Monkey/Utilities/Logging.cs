@@ -14,9 +14,9 @@ namespace MIDI_Monkey.Utilities
     {
         private static readonly ConcurrentQueue<string> _logQueue = new ConcurrentQueue<string>();
         private static CancellationTokenSource _cts = new CancellationTokenSource();
-        private static Task _logProcessorTask;
+        private static Task? _logProcessorTask;
         private static readonly string logDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
-        private static RichTextBox _richTextBoxLog;
+        private static RichTextBox? _richTextBoxLog;
         private static bool _isInitialized = false;
 
         // Configuration
@@ -43,7 +43,8 @@ namespace MIDI_Monkey.Utilities
                 }
             }
 
-            _logProcessorTask = ProcessLogQueueAsync(_cts.Token);
+            // Run on the thread pool, never on the UI thread's synchronization context.
+            _logProcessorTask = Task.Run(() => ProcessLogQueueAsync(_cts.Token));
             _isInitialized = true;
 
             DebugLog("Logging system initialized");
@@ -82,7 +83,7 @@ namespace MIDI_Monkey.Utilities
                 {
                     batch.Clear();
 
-                    while (batch.Count < BATCH_SIZE && _logQueue.TryDequeue(out string logMessage))
+                    while (batch.Count < BATCH_SIZE && _logQueue.TryDequeue(out var logMessage))
                     {
                         batch.Add(logMessage);
                     }
@@ -173,6 +174,19 @@ namespace MIDI_Monkey.Utilities
             }
         }
 
+        // Only touched on the UI thread (inside AppendToTextBox).
+        private static int _textBoxLineCount = 0;
+
+        private static int CountLines(string text)
+        {
+            int count = 0;
+            foreach (char c in text)
+            {
+                if (c == '\n') count++;
+            }
+            return count;
+        }
+
         private static void AppendToTextBox(RichTextBox textBox, string text)
         {
             try
@@ -183,13 +197,27 @@ namespace MIDI_Monkey.Utilities
                 textBox.SuspendLayout();
 
                 textBox.AppendText(text);
+                _textBoxLineCount += CountLines(text);
 
-                if (textBox.Lines.Length > MAX_TEXTBOX_LINES)
+                // Trim old lines. Uses our own line count; reading textBox.Lines rebuilds the
+                // whole line array every time and was called on every batch.
+                if (_textBoxLineCount > MAX_TEXTBOX_LINES)
                 {
-                    int linesToKeep = TEXTBOX_TRIM_TO;
-                    string[] newLines = new string[linesToKeep];
-                    Array.Copy(textBox.Lines, textBox.Lines.Length - linesToKeep, newLines, 0, linesToKeep);
-                    textBox.Lines = newLines;
+                    string current = textBox.Text;
+                    int linesToRemove = _textBoxLineCount - TEXTBOX_TRIM_TO;
+                    int cut = 0;
+                    for (int i = 0; i < linesToRemove && cut >= 0; i++)
+                    {
+                        cut = current.IndexOf('\n', cut);
+                        if (cut >= 0) cut++;
+                    }
+
+                    if (cut > 0)
+                    {
+                        textBox.Text = current.Substring(cut);
+                        textBox.SelectionStart = textBox.TextLength;
+                    }
+                    _textBoxLineCount = CountLines(textBox.Text);
                 }
 
                 textBox.ScrollToCaret();
@@ -219,7 +247,7 @@ namespace MIDI_Monkey.Utilities
                     {
                         var remainingMessages = new List<string>();
 
-                        while (_logQueue.TryDequeue(out string message))
+                        while (_logQueue.TryDequeue(out var message))
                         {
                             remainingMessages.Add(message);
 
@@ -235,7 +263,7 @@ namespace MIDI_Monkey.Utilities
                             await ProcessLogBatchAsync(remainingMessages);
                         }
 
-                        await Task.WhenAny(_logProcessorTask, Task.Delay(Timeout.Infinite, timeoutCts.Token));
+                        await Task.WhenAny(_logProcessorTask ?? Task.CompletedTask, Task.Delay(Timeout.Infinite, timeoutCts.Token));
                     }
                     catch (OperationCanceledException)
                     {
