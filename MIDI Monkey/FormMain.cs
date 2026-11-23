@@ -17,7 +17,7 @@ namespace MIDI_Monkey
 {
     public partial class FormMain : Form
     {
-        private const string AppVersion = "v7.1";
+        private const string AppVersion = "v7.2";
 
         // UI Helpers
         private DraggablePanelHelper _draggablePanelHelper;
