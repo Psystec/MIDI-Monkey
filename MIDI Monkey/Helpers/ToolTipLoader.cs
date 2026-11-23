@@ -13,6 +13,7 @@ namespace MIDI_Monkey.Helpers
             [ControlNames.ButtonStopSong] = $"Stop MIDI playback immediately.\nYou can also press **{Settings.settings.StopPlaybackKey}** as a shortcut to halt playback.",
             [ControlNames.LabelMIDIDeviceLabel] = "Select and connect a MIDI instrument for live input.\nPlay notes on your MIDI device, and they will be sent directly to the game or application in real time.",
             [ControlNames.TrackBarTempo] = "Adjust the playback speed of MIDI notes sent to the game or application.\nMove the slider to speed up or slow down note timing without altering the MIDI file.",
+            [ControlNames.TrackBarOctave] = "Shift every note up or down by whole octaves (12 notes) before it is matched to a key.\nUse this when a song is too high or too low for the instrument's range.",
             [ControlNames.TrackBarModifierDelay] = "Set a delay between modifier keys (first key in the midikeymap.json) and key presses.\nUseful for fine-tuning input timing when using key modifiers.",
             [ControlNames.CheckBoxRepeatSong] = "Enable loop mode to continuously replay the selected song.\nPlayback will restart automatically when the song ends.",
             [ControlNames.CheckBoxAlwaysOnTop] = "Keep the MIDI Monkey window always visible above other applications.\nParticularly useful for single-monitor setups where quick access is needed.",
@@ -63,6 +64,7 @@ namespace MIDI_Monkey.Helpers
         public const string LabelMIDIDeviceLabel = "labelMIDIDeviceLabel";
         public const string TrackBarTempo = "trackBarTempo";
         public const string TrackBarModifierDelay = "trackBarModifierDelay";
+        public const string TrackBarOctave = "trackBarOctave";
         public const string CheckBoxRepeatSong = "checkBoxRepeatSong";
         public const string CheckBoxAlwaysOnTop = "checkBoxAlwaysOnTop";
         public const string GroupBoxMIDIkeyMapProfiles = "groupBoxMIDIkeyMapProfiles";

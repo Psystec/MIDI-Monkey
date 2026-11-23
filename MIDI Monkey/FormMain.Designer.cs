@@ -61,6 +61,9 @@ namespace MIDI_Monkey
             labelTempo = new Label();
             trackBarTempo = new TrackBar();
             labelTempoLabel = new Label();
+            labelOctave = new Label();
+            trackBarOctave = new TrackBar();
+            labelOctaveLabel = new Label();
             checkBoxAlwaysOnTop = new CheckBox();
             checkBoxRepeatSong = new CheckBox();
             pictureBoxPayPal = new PictureBox();
@@ -104,6 +107,7 @@ namespace MIDI_Monkey
             groupBoxSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)trackBarModifierDelay).BeginInit();
             ((System.ComponentModel.ISupportInitialize)trackBarTempo).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)trackBarOctave).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxPayPal).BeginInit();
             groupBoxKeyVisualizer.SuspendLayout();
             groupBoxMIDIChannels.SuspendLayout();
@@ -193,7 +197,7 @@ namespace MIDI_Monkey
             groupBoxMIDIkeyMapProfiles.ForeColor = Color.LightGray;
             groupBoxMIDIkeyMapProfiles.Location = new Point(3, 3);
             groupBoxMIDIkeyMapProfiles.Name = "groupBoxMIDIkeyMapProfiles";
-            groupBoxMIDIkeyMapProfiles.Size = new Size(181, 311);
+            groupBoxMIDIkeyMapProfiles.Size = new Size(181, 362);
             groupBoxMIDIkeyMapProfiles.TabIndex = 1;
             groupBoxMIDIkeyMapProfiles.TabStop = false;
             groupBoxMIDIkeyMapProfiles.Text = "MIDI KeyMap Profiles";
@@ -207,7 +211,7 @@ namespace MIDI_Monkey
             listBoxMIDIKeyMaps.IntegralHeight = false;
             listBoxMIDIKeyMaps.Location = new Point(3, 19);
             listBoxMIDIKeyMaps.Name = "listBoxMIDIKeyMaps";
-            listBoxMIDIKeyMaps.Size = new Size(175, 289);
+            listBoxMIDIKeyMaps.Size = new Size(175, 340);
             listBoxMIDIKeyMaps.TabIndex = 6;
             listBoxMIDIKeyMaps.SelectedIndexChanged += listBoxMIDIKeyMaps_SelectedIndexChanged;
             // 
@@ -320,7 +324,7 @@ namespace MIDI_Monkey
             groupBoxSelectMIDIFolder.ForeColor = Color.LightGray;
             groupBoxSelectMIDIFolder.Location = new Point(3, 3);
             groupBoxSelectMIDIFolder.Name = "groupBoxSelectMIDIFolder";
-            groupBoxSelectMIDIFolder.Size = new Size(242, 338);
+            groupBoxSelectMIDIFolder.Size = new Size(242, 389);
             groupBoxSelectMIDIFolder.TabIndex = 3;
             groupBoxSelectMIDIFolder.TabStop = false;
             groupBoxSelectMIDIFolder.Text = "MIDI Files";
@@ -334,7 +338,7 @@ namespace MIDI_Monkey
             listBoxMIDIFiles.IntegralHeight = false;
             listBoxMIDIFiles.Location = new Point(3, 19);
             listBoxMIDIFiles.Name = "listBoxMIDIFiles";
-            listBoxMIDIFiles.Size = new Size(236, 316);
+            listBoxMIDIFiles.Size = new Size(236, 367);
             listBoxMIDIFiles.TabIndex = 0;
             listBoxMIDIFiles.SelectedIndexChanged += listBoxMIDIFiles_SelectedIndexChanged;
             // 
@@ -353,7 +357,7 @@ namespace MIDI_Monkey
             splitContainerMain.Panel2.Controls.Add(groupBoxDebugLog);
             splitContainerMain.Panel2.Controls.Add(groupBoxSettings);
             splitContainerMain.Panel2.Controls.Add(groupBoxMIDIControls);
-            splitContainerMain.Size = new Size(825, 347);
+            splitContainerMain.Size = new Size(825, 398);
             splitContainerMain.SplitterDistance = 440;
             splitContainerMain.TabIndex = 4;
             splitContainerMain.SplitterMoved += splitContainerMain_SplitterMoved;
@@ -374,7 +378,7 @@ namespace MIDI_Monkey
             // 
             splitContainerProfilesAndFiles.Panel2.Controls.Add(groupBoxSelectMIDIFolder);
             splitContainerProfilesAndFiles.Panel2MinSize = 78;
-            splitContainerProfilesAndFiles.Size = new Size(440, 347);
+            splitContainerProfilesAndFiles.Size = new Size(440, 398);
             splitContainerProfilesAndFiles.SplitterDistance = 186;
             splitContainerProfilesAndFiles.TabIndex = 4;
             // 
@@ -385,7 +389,7 @@ namespace MIDI_Monkey
             buttonEditKeyMaps.FlatAppearance.MouseDownBackColor = Color.Gray;
             buttonEditKeyMaps.FlatAppearance.MouseOverBackColor = Color.Silver;
             buttonEditKeyMaps.FlatStyle = FlatStyle.System;
-            buttonEditKeyMaps.Location = new Point(3, 320);
+            buttonEditKeyMaps.Location = new Point(3, 371);
             buttonEditKeyMaps.Name = "buttonEditKeyMaps";
             buttonEditKeyMaps.Size = new Size(181, 24);
             buttonEditKeyMaps.TabIndex = 3;
@@ -399,7 +403,7 @@ namespace MIDI_Monkey
             groupBoxDebugLog.Controls.Add(richTextBoxLog);
             groupBoxDebugLog.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             groupBoxDebugLog.ForeColor = Color.LightGray;
-            groupBoxDebugLog.Location = new Point(3, 251);
+            groupBoxDebugLog.Location = new Point(3, 302);
             groupBoxDebugLog.Name = "groupBoxDebugLog";
             groupBoxDebugLog.Size = new Size(375, 90);
             groupBoxDebugLog.TabIndex = 6;
@@ -428,6 +432,9 @@ namespace MIDI_Monkey
             groupBoxSettings.Controls.Add(labelTempo);
             groupBoxSettings.Controls.Add(trackBarTempo);
             groupBoxSettings.Controls.Add(labelTempoLabel);
+            groupBoxSettings.Controls.Add(labelOctave);
+            groupBoxSettings.Controls.Add(trackBarOctave);
+            groupBoxSettings.Controls.Add(labelOctaveLabel);
             groupBoxSettings.Controls.Add(checkBoxAlwaysOnTop);
             groupBoxSettings.Controls.Add(checkBoxRepeatSong);
             groupBoxSettings.FlatStyle = FlatStyle.Flat;
@@ -435,7 +442,7 @@ namespace MIDI_Monkey
             groupBoxSettings.ForeColor = Color.LightGray;
             groupBoxSettings.Location = new Point(3, 114);
             groupBoxSettings.Name = "groupBoxSettings";
-            groupBoxSettings.Size = new Size(374, 131);
+            groupBoxSettings.Size = new Size(374, 182);
             groupBoxSettings.TabIndex = 5;
             groupBoxSettings.TabStop = false;
             groupBoxSettings.Text = "Settings";
@@ -496,6 +503,41 @@ namespace MIDI_Monkey
             trackBarTempo.TickStyle = TickStyle.Both;
             trackBarTempo.Scroll += trackBarTempo_Scroll;
             // 
+            // labelOctave
+            // 
+            labelOctave.Anchor = AnchorStyles.Right;
+            labelOctave.AutoSize = true;
+            labelOctave.Font = new Font("Segoe UI", 9F);
+            labelOctave.Location = new Point(328, 135);
+            labelOctave.Name = "labelOctave";
+            labelOctave.Size = new Size(13, 15);
+            labelOctave.TabIndex = 16;
+            labelOctave.Text = "0";
+            // 
+            // trackBarOctave
+            // 
+            trackBarOctave.Anchor = AnchorStyles.Right;
+            trackBarOctave.LargeChange = 1;
+            trackBarOctave.Location = new Point(190, 123);
+            trackBarOctave.Maximum = 3;
+            trackBarOctave.Minimum = -3;
+            trackBarOctave.Name = "trackBarOctave";
+            trackBarOctave.Size = new Size(131, 45);
+            trackBarOctave.TabIndex = 15;
+            trackBarOctave.TickStyle = TickStyle.Both;
+            trackBarOctave.Scroll += trackBarOctave_Scroll;
+            // 
+            // labelOctaveLabel
+            // 
+            labelOctaveLabel.Anchor = AnchorStyles.Right;
+            labelOctaveLabel.AutoSize = true;
+            labelOctaveLabel.Font = new Font("Segoe UI", 9F);
+            labelOctaveLabel.Location = new Point(136, 135);
+            labelOctaveLabel.Name = "labelOctaveLabel";
+            labelOctaveLabel.Size = new Size(48, 15);
+            labelOctaveLabel.TabIndex = 14;
+            labelOctaveLabel.Text = "Octave:";
+            // 
             // labelTempoLabel
             // 
             labelTempoLabel.Anchor = AnchorStyles.Right;
@@ -536,7 +578,7 @@ namespace MIDI_Monkey
             pictureBoxPayPal.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             pictureBoxPayPal.BackgroundImage = (Image)resources.GetObject("pictureBoxPayPal.BackgroundImage");
             pictureBoxPayPal.BackgroundImageLayout = ImageLayout.Zoom;
-            pictureBoxPayPal.Location = new Point(737, 480);
+            pictureBoxPayPal.Location = new Point(737, 531);
             pictureBoxPayPal.Name = "pictureBoxPayPal";
             pictureBoxPayPal.Size = new Size(97, 84);
             pictureBoxPayPal.TabIndex = 4;
@@ -546,7 +588,7 @@ namespace MIDI_Monkey
             // labelPayPalLabel
             // 
             labelPayPalLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            labelPayPalLabel.Location = new Point(453, 477);
+            labelPayPalLabel.Location = new Point(453, 528);
             labelPayPalLabel.Name = "labelPayPalLabel";
             labelPayPalLabel.Size = new Size(279, 87);
             labelPayPalLabel.TabIndex = 3;
@@ -560,7 +602,7 @@ namespace MIDI_Monkey
             panelResizeHandle.BackgroundImage = (Image)resources.GetObject("panelResizeHandle.BackgroundImage");
             panelResizeHandle.BackgroundImageLayout = ImageLayout.Zoom;
             panelResizeHandle.Cursor = Cursors.SizeNWSE;
-            panelResizeHandle.Location = new Point(825, 553);
+            panelResizeHandle.Location = new Point(825, 604);
             panelResizeHandle.Name = "panelResizeHandle";
             panelResizeHandle.Size = new Size(25, 24);
             panelResizeHandle.TabIndex = 5;
@@ -571,7 +613,7 @@ namespace MIDI_Monkey
             groupBoxKeyVisualizer.Controls.Add(panelMidiNoteVisualizer);
             groupBoxKeyVisualizer.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             groupBoxKeyVisualizer.ForeColor = Color.LightGray;
-            groupBoxKeyVisualizer.Location = new Point(15, 394);
+            groupBoxKeyVisualizer.Location = new Point(15, 445);
             groupBoxKeyVisualizer.Name = "groupBoxKeyVisualizer";
             groupBoxKeyVisualizer.Size = new Size(432, 170);
             groupBoxKeyVisualizer.TabIndex = 6;
@@ -607,7 +649,7 @@ namespace MIDI_Monkey
             groupBoxMIDIChannels.Controls.Add(checkBoxMIDIChannel01);
             groupBoxMIDIChannels.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             groupBoxMIDIChannels.ForeColor = Color.DarkGray;
-            groupBoxMIDIChannels.Location = new Point(458, 394);
+            groupBoxMIDIChannels.Location = new Point(458, 445);
             groupBoxMIDIChannels.Name = "groupBoxMIDIChannels";
             groupBoxMIDIChannels.Size = new Size(376, 80);
             groupBoxMIDIChannels.TabIndex = 7;
@@ -859,7 +901,7 @@ namespace MIDI_Monkey
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(64, 64, 64);
-            ClientSize = new Size(849, 576);
+            ClientSize = new Size(849, 627);
             Controls.Add(groupBoxMIDIChannels);
             Controls.Add(groupBoxKeyVisualizer);
             Controls.Add(panelResizeHandle);
@@ -870,7 +912,7 @@ namespace MIDI_Monkey
             ForeColor = Color.Silver;
             FormBorderStyle = FormBorderStyle.None;
             Icon = (Icon)resources.GetObject("$this.Icon");
-            MinimumSize = new Size(849, 576);
+            MinimumSize = new Size(849, 627);
             Name = "FormMain";
             Text = "MIDI Monkey";
             Load += FormMain_Load;
@@ -896,6 +938,7 @@ namespace MIDI_Monkey
             groupBoxSettings.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)trackBarModifierDelay).EndInit();
             ((System.ComponentModel.ISupportInitialize)trackBarTempo).EndInit();
+            ((System.ComponentModel.ISupportInitialize)trackBarOctave).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxPayPal).EndInit();
             groupBoxKeyVisualizer.ResumeLayout(false);
             groupBoxMIDIChannels.ResumeLayout(false);
@@ -933,6 +976,9 @@ namespace MIDI_Monkey
         private Label labelTempo;
         private TrackBar trackBarTempo;
         private Label labelTempoLabel;
+        private Label labelOctave;
+        private TrackBar trackBarOctave;
+        private Label labelOctaveLabel;
         private GroupBox groupBoxKeyVisualizer;
         private Panel panelMidiNoteVisualizer;
         private PictureBox pictureBoxLogo;

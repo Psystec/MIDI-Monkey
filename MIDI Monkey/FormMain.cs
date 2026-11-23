@@ -17,7 +17,7 @@ namespace MIDI_Monkey
 {
     public partial class FormMain : Form
     {
-        private const string AppVersion = "v7.2";
+        private const string AppVersion = "v7.3";
 
         // UI Helpers
         private DraggablePanelHelper _draggablePanelHelper;
@@ -45,6 +45,7 @@ namespace MIDI_Monkey
         // used Control.Invoke, which made every note wait for the (possibly busy) UI thread.
         private volatile int _tempoAdjustment = 0;
         private volatile int _modifierDelay = 0;
+        private volatile int _octaveShift = 0;
         private volatile bool _repeatSong = false;
 
         public FormMain()
@@ -139,6 +140,9 @@ namespace MIDI_Monkey
             _tempoAdjustment = trackBarTempo.Value;
             _modifierDelay = trackBarModifierDelay.Value;
             _repeatSong = checkBoxRepeatSong.Checked;
+            trackBarOctave.Value = Math.Clamp(Settings.settings.OctaveShift, trackBarOctave.Minimum, trackBarOctave.Maximum);
+            labelOctave.Text = FormatOctave(trackBarOctave.Value);
+            _octaveShift = trackBarOctave.Value;
             this.TopMost = Settings.settings.AlwaysOnTop;
             this.Width = Settings.settings.WindowSize.X;
             this.Height = Settings.settings.WindowSize.Y;
@@ -155,6 +159,7 @@ namespace MIDI_Monkey
                 Settings.settings.AlwaysOnTop = checkBoxAlwaysOnTop.Checked;
                 Settings.settings.Speed = trackBarTempo.Value;
                 Settings.settings.ModifierDelay = trackBarModifierDelay.Value;
+                Settings.settings.OctaveShift = trackBarOctave.Value;
                 this.TopMost = Settings.settings.AlwaysOnTop;
                 await Settings.SaveSettingsAsync();
             }
@@ -387,7 +392,9 @@ namespace MIDI_Monkey
             {
                 if (e.MidiEvent is not NoteEvent noteEvent) return;
 
-                int noteNumber = noteEvent.NoteNumber;
+                // Octave slider applies to a live MIDI keyboard too.
+                int noteNumber = noteEvent.NoteNumber + _octaveShift * 12;
+                if (noteNumber < 0 || noteNumber > 127) return;
                 bool isNoteOn = e.MidiEvent.CommandCode == MidiCommandCode.NoteOn && noteEvent.Velocity > 0;
                 bool isNoteOff = e.MidiEvent.CommandCode == MidiCommandCode.NoteOff ||
                                  (e.MidiEvent.CommandCode == MidiCommandCode.NoteOn && noteEvent.Velocity == 0);
@@ -558,6 +565,7 @@ namespace MIDI_Monkey
                 isTargetFocused: () => Win32Api.IsProcessFocused(gameProcessId),
                 getTempoAdjustment: () => _tempoAdjustment,
                 getModifierDelay: () => _modifierDelay,
+                getOctaveShift: () => _octaveShift,
                 highlightKeyAction: (note, duration) => _visualBoard.HighlightKey(note, duration),
                 getRepeatSetting: () => _repeatSong,
                 getChannelSettings: () => _midiChannelService
@@ -678,6 +686,15 @@ namespace MIDI_Monkey
             _modifierDelay = trackBarModifierDelay.Value;
             await SaveSettingsAsync();
         }
+
+        private async void trackBarOctave_Scroll(object sender, EventArgs e)
+        {
+            labelOctave.Text = FormatOctave(trackBarOctave.Value);
+            _octaveShift = trackBarOctave.Value;
+            await SaveSettingsAsync();
+        }
+
+        private static string FormatOctave(int octave) => octave > 0 ? $"+{octave}" : octave.ToString();
 
         private void buttonClose_MouseClick(object sender, MouseEventArgs e)
         {

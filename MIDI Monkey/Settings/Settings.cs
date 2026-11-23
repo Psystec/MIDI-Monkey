@@ -29,9 +29,10 @@ namespace MIDI_Monkey
             public bool AlwaysOnTop { get; set; } = true;
             public int Speed { get; set; } = 0;
             public int ModifierDelay { get; set; } = 0;
+            public int OctaveShift { get; set; } = 0;
             public Keys StartPlaybackKey { get; set; } = Keys.F5;
             public Keys StopPlaybackKey { get; set; } = Keys.F6;
-            public Point WindowSize { get;set; } = new Point(849, 576);
+            public Point WindowSize { get;set; } = new Point(849, 627);
             public int SplitterMainDistance { get; set; } = 440;
         }
 

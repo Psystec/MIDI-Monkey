@@ -35,6 +35,7 @@ namespace MIDI_Monkey.Core
         private readonly Func<bool> _isTargetFocused;
         private readonly Func<int> _getTempoAdjustment;
         private readonly Func<int> _getModifierDelay;
+        private readonly Func<int> _getOctaveShift;
         private readonly Action<int, int> _highlightKeyAction;
         private readonly Func<bool> _getRepeatSetting;
         private readonly Func<MidiChannelService> _getChannelSettings;
@@ -44,6 +45,7 @@ namespace MIDI_Monkey.Core
             Func<bool> isTargetFocused,
             Func<int> getTempoAdjustment,
             Func<int> getModifierDelay,
+            Func<int> getOctaveShift,
             Action<int, int> highlightKeyAction,
             Func<bool> getRepeatSetting,
             Func<MidiChannelService> getChannelSettings)
@@ -52,6 +54,7 @@ namespace MIDI_Monkey.Core
             _isTargetFocused = isTargetFocused ?? throw new ArgumentNullException(nameof(isTargetFocused));
             _getTempoAdjustment = getTempoAdjustment;
             _getModifierDelay = getModifierDelay;
+            _getOctaveShift = getOctaveShift;
             _highlightKeyAction = highlightKeyAction;
             _getRepeatSetting = getRepeatSetting;
             _getChannelSettings = getChannelSettings;
@@ -222,6 +225,7 @@ namespace MIDI_Monkey.Core
             Stopwatch stopwatch, PreciseTimer timer, ref double timelineMs, CancellationToken token)
         {
             var channelSettings = _getChannelSettings();
+            int semitoneShift = _getOctaveShift() * 12;
 
             // Keys that share the same modifiers can be pressed at the exact same moment.
             // Notes that need different modifiers must be pressed one after another.
@@ -236,12 +240,19 @@ namespace MIDI_Monkey.Core
                     continue;
                 }
 
-                if (!_midiKeyMapService.TryGetValue(note.NoteNumber, out var keys) || keys.Count == 0)
+                // Octave slider: move the note up/down before looking up its key.
+                int noteNumber = note.NoteNumber + semitoneShift;
+                if (noteNumber < 0 || noteNumber > 127)
                 {
                     continue;
                 }
 
-                _highlightKeyAction(note.NoteNumber, 100);
+                if (!_midiKeyMapService.TryGetValue(noteNumber, out var keys) || keys.Count == 0)
+                {
+                    continue;
+                }
+
+                _highlightKeyAction(noteNumber, 100);
 
                 if (!focused)
                 {
@@ -249,7 +260,8 @@ namespace MIDI_Monkey.Core
                 }
 
                 pending.Add((keys.Take(keys.Count - 1).ToList(), keys[^1]));
-                Logging.DebugLog($"Key Down: {note.NoteName} ({note.NoteNumber}) CH:{note.Channel} ({string.Join(", ", keys)})");
+                string shiftInfo = semitoneShift == 0 ? "" : $" -> {noteNumber}";
+                Logging.DebugLog($"Key Down: {note.NoteName} ({note.NoteNumber}{shiftInfo}) CH:{note.Channel} ({string.Join(", ", keys)})");
             }
 
             if (pending.Count == 0)
